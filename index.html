@@ -1,0 +1,250 @@
+﻿<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IT Mentorship Lab — ИП Олег Леонов</title>
+  <meta name="description" content="Карьерное менторство в IT: старт с нуля, подготовка к собеседованиям, рост грейда и зарплаты, автоотклики.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="index">
+  <header class="site-header" id="top">
+    <div class="container header-inner">
+      <a class="brand" href="index.html" aria-label="На главную">
+        <span class="brand-main">LEONOV CARE</span>
+        <span class="brand-sub">IT Mentorship Lab</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span class="sr-only">Открыть меню</span>
+      </button>
+      <nav class="site-nav" id="site-nav" aria-label="Основная навигация">
+        <a data-page="index" href="index.html">Главная</a>
+        <a data-page="services" href="index.html#services">Услуги</a>
+        <a data-page="directions" href="directions.html">Языки и рынок</a>
+        <a class="nav-cta" data-link="mentor" href="#">Бесплатный разбор</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="section hero" data-section>
+      <div class="container hero-grid">
+        <div class="hero-copy" data-reveal>
+          <p class="eyebrow">Карьерное менторство в IT</p>
+          <h1>От первого шага в IT до оффера и роста дохода</h1>
+          <p class="lead">
+            Выберите формат под свою цель: старт с нуля, подготовка к собеседованиям,
+            рост грейда и зарплаты или автоотклики для усиления воронки.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" data-link="mentor" href="#">Бесплатный разбор резюме</a>
+            <a class="btn btn-ghost" data-link="channel" href="#">Канал с разборами</a>
+          </div>
+          <div class="info-strip">
+            <span>Python</span>
+            <span>Java</span>
+            <span>Golang</span>
+            <span>Frontend</span>
+            <span>Rust и другие языки</span>
+          </div>
+        </div>
+        <aside class="card hero-panel" data-reveal>
+          <h2>Как начать</h2>
+          <ul class="check-list">
+            <li>Коротко обсуждаем вашу цель и текущий уровень.</li>
+            <li>Подбираем формат и собираем персональный план.</li>
+            <li>Двигаемся по этапам с обратной связью и практикой.</li>
+          </ul>
+          <div class="panel-actions">
+            <a class="btn btn-secondary" data-link="mentor" href="#">Написать ментору</a>
+            <a class="btn btn-link" data-link="bot" href="#">Получить бота</a>
+          </div>
+          <p class="panel-note" data-bot-note></p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section section-tone-blue" id="services" data-section>
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Услуги</p>
+          <h2>Выберите формат под вашу карьерную задачу</h2>
+          <p class="muted">Прозрачные тарифы: стоимость видна сразу в карточке услуги.</p>
+        </div>
+        <div id="service-pillars-grid" class="cards-grid cards-2"></div>
+      </div>
+    </section>
+
+    <section class="section section-muted" id="free-now" data-section>
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Бесплатно</p>
+          <h2>Что можно получить уже сейчас</h2>
+          <p class="muted">Даже если вы пока не готовы к сопровождению, можно начать с полезных материалов и сообщества.</p>
+        </div>
+        <div class="cards-grid cards-2">
+          <article class="card artifact-card card-variant" data-reveal>
+            <h3>Доступ в группу единомышленников</h3>
+            <p>Комьюнити для обмена опытом, поддержки и нетворкинга.</p>
+          </article>
+          <article class="card artifact-card card-variant-alt" data-reveal>
+            <h3>Бесплатный roadmap</h3>
+            <p>Стартовый маршрут по навыкам и этапам выхода на рынок.</p>
+          </article>
+          <article class="card artifact-card card-variant-alt" data-reveal>
+            <h3>Вопросы с собеседований</h3>
+            <p>Подборка реальных вопросов и тем для подготовки.</p>
+          </article>
+          <article class="card artifact-card card-variant" data-reveal>
+            <h3>50 бесплатных откликов на аккаунт</h3>
+            <p>Можно протестировать автоотклики и увидеть первые сигналы рынка.</p>
+          </article>
+        </div>
+        <div class="hero-actions" data-reveal>
+          <a class="btn btn-secondary" data-link="channel" href="#">Вступить в сообщество</a>
+          <a class="btn btn-primary" data-link="bot" href="#">Получить 50 откликов</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="process" data-section>
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Как работаем</p>
+          <h2>Простой маршрут к результату</h2>
+        </div>
+        <div class="cards-grid cards-2 roadmap-flow">
+          <article class="card process-card roadmap-step-card" data-reveal>
+            <span class="step">Шаг 1</span>
+            <h3>Диагностика</h3>
+            <p>Определяем стартовую точку, цели и приоритеты на ближайшие месяцы.</p>
+          </article>
+          <article class="card process-card roadmap-step-card" data-reveal>
+            <span class="step">Шаг 2</span>
+            <h3>План действий</h3>
+            <p>Собираем чёткий маршрут: навыки, проекты, интервью и стратегия поиска.</p>
+          </article>
+          <article class="card process-card roadmap-step-card" data-reveal>
+            <span class="step">Шаг 3</span>
+            <h3>Практика и фидбек</h3>
+            <p>Закрепляем навыки на задачах и быстро корректируем курс по результатам.</p>
+          </article>
+          <article class="card process-card roadmap-step-card" data-reveal>
+            <span class="step">Шаг 4</span>
+            <h3>Финальный рывок</h3>
+            <p>Выходим к офферу, повышению или стабильному потоку приглашений на интервью.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" data-section>
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Что получите</p>
+          <h2>Фокус на результат, а не на теорию ради теории</h2>
+        </div>
+        <div class="cards-grid cards-3">
+          <article class="card artifact-card card-variant" data-reveal>
+            <h3>Понятный план</h3>
+            <p>Чётко видно, что делать на каждом этапе и зачем это нужно.</p>
+          </article>
+          <article class="card artifact-card card-variant-alt" data-reveal>
+            <h3>Реальная практика</h3>
+            <p>Работаем на задачах и кейсах, которые ценятся на рынке.</p>
+          </article>
+          <article class="card artifact-card card-variant" data-reveal>
+            <h3>Поддержка до результата</h3>
+            <p>Вы не остаетесь один: получаете обратную связь и корректировки по ходу.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-tone-green" id="proof" data-section>
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Отзывы</p>
+          <h2>Реальные скрины из таблиц и переписок</h2>
+        </div>
+        <div class="reviews-carousel" data-reviews-carousel data-reveal>
+          <button class="review-nav-btn" type="button" data-reviews-prev aria-label="Предыдущие отзывы">
+            <span aria-hidden="true">←</span>
+          </button>
+          <div class="reviews-viewport">
+            <div class="reviews-track">
+              <figure class="card review-card">
+                <button class="review-trigger" type="button" data-review-trigger data-image="assets/review-1.svg" data-caption="Java backend • перейти из поддержки в разработку">
+                  <span class="media-shell">
+                    <img src="assets/review-1.svg" alt="Скрин отзыва по Java backend">
+                  </span>
+                </button>
+                <figcaption>Java backend • перейти из поддержки в разработку</figcaption>
+              </figure>
+              <figure class="card review-card">
+                <button class="review-trigger" type="button" data-review-trigger data-image="assets/review-2.svg" data-caption="Python backend • упаковать опыт и пройти техэтап">
+                  <span class="media-shell">
+                    <img src="assets/review-2.svg" alt="Скрин отзыва по Python backend">
+                  </span>
+                </button>
+                <figcaption>Python backend • упаковать опыт и пройти техэтап</figcaption>
+              </figure>
+              <figure class="card review-card">
+                <button class="review-trigger" type="button" data-review-trigger data-image="assets/review-3.svg" data-caption="Golang • закрыть пробелы в архитектуре и concurrency">
+                  <span class="media-shell">
+                    <img src="assets/review-3.svg" alt="Скрин отзыва по Golang">
+                  </span>
+                </button>
+                <figcaption>Golang • закрыть пробелы в архитектуре и concurrency</figcaption>
+              </figure>
+            </div>
+          </div>
+          <button class="review-nav-btn" type="button" data-reviews-next aria-label="Следующие отзывы">
+            <span aria-hidden="true">→</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-cta" data-section>
+      <div class="container cta-wrap" data-reveal>
+        <div>
+          <p class="eyebrow">Старт</p>
+          <h2>Напишите в Telegram и получите персональный план действий</h2>
+          <p class="muted">Разберём текущую точку и предложим оптимальный путь под вашу цель.</p>
+        </div>
+        <div class="cta-actions">
+          <a class="btn btn-primary btn-lg" data-link="mentor" href="#">Написать ментору</a>
+          <a class="btn btn-ghost btn-lg" data-link="channel" href="#">Открыть канал</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© <span id="year"></span> ИП Олег Леонов</p>
+      <p class="footer-tax">ИП Олег Леонов • ИНН: <span class="footer-tax-placeholder">[добавьте ваш ИНН]</span></p>
+      <a class="footer-offer-link" href="offer.html">Публичная оферта</a>
+    </div>
+  </footer>
+
+  <div class="lightbox" id="lightbox" aria-hidden="true" role="dialog" aria-label="Просмотр отзыва">
+    <div class="lightbox-inner">
+      <button class="lightbox-close" type="button" data-lightbox-close aria-label="Закрыть">
+        <span aria-hidden="true">×</span>
+      </button>
+      <img id="lightbox-image" src="" alt="">
+      <p id="lightbox-caption"></p>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="script.js" defer></script>
+</body>
+</html>
+
+

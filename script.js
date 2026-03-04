@@ -1,0 +1,738 @@
+(() => {
+  const config = window.siteConfig;
+  if (!config) {
+    return;
+  }
+
+  const formatMoney = (value) => {
+    const num = Number(value);
+    if (!Number.isFinite(num)) {
+      return "По запросу";
+    }
+    return `${new Intl.NumberFormat("ru-RU").format(num)} ₽`;
+  };
+
+  const toTelegramUrl = (baseUrl, message) => {
+    if (!baseUrl) {
+      return "#";
+    }
+    try {
+      const url = new URL(baseUrl);
+      if (message) {
+        url.searchParams.set("text", message);
+      }
+      return url.toString();
+    } catch (error) {
+      const separator = baseUrl.includes("?") ? "&" : "?";
+      return message ? `${baseUrl}${separator}text=${encodeURIComponent(message)}` : baseUrl;
+    }
+  };
+
+  const mentorLink = toTelegramUrl(config.mentorUrl, config.prefilledMessage);
+  const channelLink = config.channelUrl || "#";
+  const botLink = (config.botUrl && config.botUrl.trim())
+    ? config.botUrl.trim()
+    : toTelegramUrl(config.mentorUrl, config.prefilledMessage);
+
+  const applyLinks = () => {
+    const linkMap = {
+      mentor: mentorLink,
+      channel: channelLink,
+      bot: botLink
+    };
+
+    document.querySelectorAll("[data-link]").forEach((node) => {
+      const type = node.getAttribute("data-link");
+      const href = linkMap[type] || "#";
+      node.setAttribute("href", href);
+      if (href !== "#") {
+        node.setAttribute("target", "_blank");
+        node.setAttribute("rel", "noopener noreferrer");
+      }
+    });
+
+    const botNote = document.querySelector("[data-bot-note]");
+    if (botNote) {
+      botNote.textContent = (config.botUrl && config.botUrl.trim())
+        ? "Бот активен: можно перейти напрямую."
+        : "Бот обновляется. Кнопка пока ведёт в Telegram к ментору с предзаполненным сообщением.";
+    }
+  };
+
+  const renderPricing = () => {
+    const grid = document.getElementById("pricing-grid");
+    if (!grid || !Array.isArray(config.mentorshipPackages)) {
+      return;
+    }
+
+    const items = config.mentorshipPackages.map((item) => {
+      const price = config.packagePrices[item.priceKey] || "По запросу";
+      const features = (item.features || [])
+        .map((feature) => `<li>${feature}</li>`)
+        .join("");
+
+      return `
+        <article class="card pricing-card ${item.featured ? "is-featured" : ""}" data-reveal>
+          <span class="pricing-badge">${item.badge || "Формат"}</span>
+          <h3>${item.title}</h3>
+          <p class="muted">${item.subtitle || ""}</p>
+          <p class="pricing-price">${price}</p>
+          <ul class="pricing-list">${features}</ul>
+          <a class="btn ${item.linkType === "bot" ? "btn-secondary" : "btn-primary"}" data-link="${item.linkType || "mentor"}" href="#">${item.ctaLabel || "Выбрать формат"}</a>
+        </article>
+      `;
+    });
+
+    grid.innerHTML = items.join("");
+  };
+
+  const renderPaymentModes = () => {
+    const list = document.getElementById("payment-options");
+    if (!list || !Array.isArray(config.paymentModes)) {
+      return;
+    }
+    list.innerHTML = config.paymentModes.map((item) => `<li>${item}</li>`).join("");
+  };
+
+  const renderAutoapplyPricing = () => {
+    const ratesList = document.getElementById("autoapply-rates");
+    const packsList = document.getElementById("autoapply-packs");
+    const subsList = document.getElementById("autoapply-subscriptions");
+    const autoapply = config.autoapply || {};
+
+    if (ratesList) {
+      const rates = Array.isArray(autoapply.rateRules) ? autoapply.rateRules : [];
+      ratesList.innerHTML = rates
+        .map((item) => `<li>${item.range}: <strong>${item.perClick || "По запросу"}</strong></li>`)
+        .join("");
+    }
+
+    if (packsList) {
+      const packs = Array.isArray(autoapply.packs) ? autoapply.packs : [];
+      packsList.innerHTML = packs
+        .map((pack) => `
+          <li>
+            ${pack.name}: ${pack.oldPrice ? `<s>${pack.oldPrice}</s> ` : ""}<strong>${pack.price || "По запросу"}</strong>
+            ${pack.note ? `<br><span class="muted">${pack.note}</span>` : ""}
+          </li>
+        `)
+        .join("");
+    }
+
+    if (subsList) {
+      const subscriptions = Array.isArray(autoapply.subscriptions) ? autoapply.subscriptions : [];
+      subsList.innerHTML = subscriptions
+        .map((subscription) => `
+          <li>
+            ${subscription.name}: ${subscription.oldPrice ? `<s>${subscription.oldPrice}</s> ` : ""}<strong>${subscription.price || "По запросу"}</strong>
+            ${subscription.note ? `<br><span class="muted">${subscription.note}</span>` : ""}
+          </li>
+        `)
+        .join("");
+    }
+  };
+
+  const renderServicePillars = () => {
+    const grid = document.getElementById("service-pillars-grid");
+    const services = Array.isArray(config.servicePillars) ? config.servicePillars : [];
+    if (!grid || !services.length) {
+      return;
+    }
+
+    grid.innerHTML = services
+      .map((service) => `
+        <article class="card service-card" data-reveal>
+          <p class="eyebrow">${service.tag || service.slug}</p>
+          <h3>${service.title}</h3>
+          <p class="service-price">${service.priceFrom || "Цена по запросу"}</p>
+          <p class="muted">${service.summary}</p>
+          <ul class="pricing-list">
+            ${(service.bullets || []).map((bullet) => `<li>${bullet}</li>`).join("")}
+          </ul>
+          <a class="btn btn-primary" href="${service.page}">${service.cta || "Открыть раздел"}</a>
+        </article>
+      `)
+      .join("");
+  };
+
+  const renderServiceTariffs = () => {
+    const page = document.body.dataset.page;
+    const root = document.getElementById("service-tariffs");
+    if (!page || !root || !config.serviceTariffs) {
+      return;
+    }
+
+    const serviceData = config.serviceTariffs[page];
+    if (!serviceData || !Array.isArray(serviceData.plans) || !serviceData.plans.length) {
+      return;
+    }
+
+    const note = document.getElementById("service-tariffs-note");
+    if (note) {
+      note.textContent = serviceData.note || "";
+    }
+
+    root.innerHTML = serviceData.plans
+      .map((plan) => `
+        <article class="card pricing-card ${plan.featured ? "is-featured" : ""}" data-reveal>
+          <span class="pricing-badge">${plan.badge || "Тариф"}</span>
+          <h3>${plan.title}</h3>
+          <p class="muted">${plan.subtitle || ""}</p>
+          <p class="pricing-price">${plan.price || "По запросу"}</p>
+          <ul class="pricing-list">
+            ${(plan.features || []).map((item) => `<li>${item}</li>`).join("")}
+          </ul>
+          <a class="btn btn-primary" data-link="${plan.linkType || "mentor"}" href="#">${plan.cta || "Оставить заявку"}</a>
+        </article>
+      `)
+      .join("");
+  };
+
+  const renderTrackCards = () => {
+    const tracks = Array.isArray(config.languageTracks) ? config.languageTracks : [];
+
+    const previewGrid = document.getElementById("track-preview-grid");
+    if (previewGrid) {
+      previewGrid.innerHTML = tracks
+        .map((track) => `
+          <article class="card direction-card" data-reveal>
+            <p class="eyebrow">${track.name}</p>
+            <h3>${track.short}</h3>
+            <p class="muted">${track.lead}</p>
+            <a class="btn btn-ghost" href="${track.page}">Открыть трек ${track.name}</a>
+          </article>
+        `)
+        .join("");
+    }
+
+    const directionsGrid = document.getElementById("directions-grid");
+    if (directionsGrid) {
+      directionsGrid.innerHTML = tracks
+        .map((track) => {
+          const topBuild = (track.whatBuild || []).slice(0, 3)
+            .map((item) => `<li>${item}</li>`)
+            .join("");
+
+          return `
+            <article class="card direction-detail-card" data-reveal>
+              <h3>${track.name}</h3>
+              <p class="muted">${track.short}</p>
+              <ul class="pricing-list">${topBuild}</ul>
+              <a class="btn btn-primary" href="${track.page}">Подробнее о ${track.name}</a>
+            </article>
+          `;
+        })
+        .join("");
+    }
+  };
+
+  const renderTrackPage = () => {
+    const slug = document.body.dataset.trackPage;
+    if (!slug) {
+      return;
+    }
+
+    const tracks = Array.isArray(config.languageTracks) ? config.languageTracks : [];
+    const track = tracks.find((item) => item.slug === slug);
+    if (!track) {
+      return;
+    }
+
+    const chartData = config.languageSalaryChart && Array.isArray(config.languageSalaryChart.data)
+      ? config.languageSalaryChart.data
+      : [];
+    const salaryItem = chartData.find((item) => item.track === slug);
+
+    const setText = (id, text) => {
+      const node = document.getElementById(id);
+      if (node) {
+        node.textContent = text;
+      }
+    };
+
+    const renderListCards = (id, items) => {
+      const container = document.getElementById(id);
+      if (!container || !Array.isArray(items)) {
+        return;
+      }
+      container.innerHTML = items
+        .map((item) => `<article class="card artifact-card" data-reveal><p>${item}</p></article>`)
+        .join("");
+    };
+
+    const renderRoadmapCards = (id, items) => {
+      const container = document.getElementById(id);
+      if (!container || !Array.isArray(items)) {
+        return;
+      }
+
+      container.classList.add("roadmap-flow");
+      container.innerHTML = items
+        .map((item, index) => `
+          <article class="card process-card roadmap-step-card" data-reveal>
+            <span class="step">Шаг ${index + 1}</span>
+            <p>${item}</p>
+          </article>
+        `)
+        .join("");
+    };
+
+    setText("track-title", track.name);
+    setText("track-lead", track.lead || track.short || "");
+    setText("track-salary", salaryItem ? formatMoney(salaryItem.value) : "По запросу");
+    setText(
+      "track-salary-note",
+      config.languageSalaryChart
+        ? `${config.languageSalaryChart.sourceTitle}. ${config.languageSalaryChart.note}`
+        : ""
+    );
+
+    renderListCards("track-what-build", track.whatBuild);
+    renderListCards("track-interview-focus", track.interviewFocus);
+    renderListCards("track-first-projects", track.firstProjects);
+    renderRoadmapCards("track-roadmap", track.roadmap);
+  };
+
+  const renderSalaryChart = () => {
+    const chartRoot = document.getElementById("salary-chart");
+    if (!chartRoot || !config.languageSalaryChart || !Array.isArray(config.languageSalaryChart.data)) {
+      return;
+    }
+
+    const sourceNode = document.getElementById("salary-chart-source");
+    const detailNode = document.getElementById("salary-chart-detail");
+    const sortButtons = Array.from(document.querySelectorAll("[data-chart-sort]"));
+
+    let sortMode = "desc";
+
+    const trackMap = new Map(
+      (config.languageTracks || []).map((track) => [track.slug, track])
+    );
+
+    const getSorted = () => {
+      const sorted = [...config.languageSalaryChart.data];
+      if (sortMode === "desc") {
+        sorted.sort((a, b) => b.value - a.value);
+      } else {
+        sorted.sort((a, b) => a.value - b.value);
+      }
+      return sorted;
+    };
+
+    const render = () => {
+      const items = getSorted();
+      const max = Math.max(...items.map((item) => item.value), 1);
+
+      chartRoot.innerHTML = items
+        .map((item) => {
+          const width = Math.round((item.value / max) * 100);
+          const focusBadge = item.focus
+            ? `<span class="chart-badge">Фокус программы</span>`
+            : "";
+          return `
+            <button class="chart-row" type="button" data-chart-item data-track="${item.track || ""}" data-name="${item.name}" data-value="${item.value}">
+              <span class="chart-lang-wrap">
+                <span class="chart-lang">${item.name}</span>
+                ${focusBadge}
+              </span>
+              <span class="chart-track"><span class="chart-fill" style="width: ${width}%;"></span></span>
+              <span class="chart-value">${formatMoney(item.value)}</span>
+            </button>
+          `;
+        })
+        .join("");
+
+      chartRoot.querySelectorAll("[data-chart-item]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const trackSlug = button.getAttribute("data-track");
+          const name = button.getAttribute("data-name") || "Язык";
+          const value = Number(button.getAttribute("data-value"));
+
+          if (trackSlug && trackMap.has(trackSlug)) {
+            const track = trackMap.get(trackSlug);
+            if (detailNode) {
+              detailNode.textContent = `${name}: ориентир ${formatMoney(value)}. Открываем страницу направления.`;
+            }
+            window.location.href = track.page;
+            return;
+          }
+
+          if (detailNode) {
+            detailNode.textContent = `${name}: ориентир ${formatMoney(value)}. Отдельная страница пока не добавлена, но язык можно взять в обучение.`;
+          }
+        });
+      });
+
+      sortButtons.forEach((button) => {
+        button.classList.toggle("is-active", button.getAttribute("data-chart-sort") === sortMode);
+      });
+    };
+
+    sortButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const mode = button.getAttribute("data-chart-sort");
+        sortMode = mode === "asc" ? "asc" : "desc";
+        render();
+      });
+    });
+
+    if (sourceNode) {
+      const { sourceTitle, sourceUrl, note } = config.languageSalaryChart;
+      sourceNode.innerHTML = sourceUrl
+        ? `Источник: <a href="${sourceUrl}" target="_blank" rel="noopener noreferrer">${sourceTitle}</a>. ${note}`
+        : `${sourceTitle}. ${note}`;
+    }
+
+    render();
+  };
+
+  const setupPageActiveNav = () => {
+    const currentPage = document.body.dataset.page;
+    if (!currentPage) {
+      return;
+    }
+
+    const servicePages = new Set([
+      "zero-offer",
+      "interview-prep",
+      "grade-salary",
+      "autoapply"
+    ]);
+
+    const activePage = servicePages.has(currentPage) ? "services" : currentPage;
+
+    document.querySelectorAll(".site-nav [data-page]").forEach((link) => {
+      link.classList.toggle("is-active", link.getAttribute("data-page") === activePage);
+    });
+  };
+
+  const setupSmartHeader = () => {
+    const header = document.querySelector(".site-header");
+    const nav = document.getElementById("site-nav");
+    if (!header) {
+      return;
+    }
+
+    let lastY = window.scrollY;
+    const threshold = 10;
+    const minY = 90;
+
+    const onScroll = () => {
+      const y = window.scrollY;
+      const diff = y - lastY;
+
+      document.body.classList.toggle("is-scrolled", y > 8);
+
+      if (nav && nav.classList.contains("is-open")) {
+        header.classList.remove("is-hidden");
+        lastY = y;
+        return;
+      }
+
+      if (Math.abs(diff) > threshold) {
+        if (diff > 0 && y > minY) {
+          header.classList.add("is-hidden");
+        } else if (diff < 0) {
+          header.classList.remove("is-hidden");
+        }
+        lastY = y;
+      }
+
+      if (y <= 8) {
+        header.classList.remove("is-hidden");
+      }
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+  };
+
+  const setupMobileMenu = () => {
+    const toggle = document.querySelector(".menu-toggle");
+    const nav = document.getElementById("site-nav");
+    if (!toggle || !nav) {
+      return;
+    }
+
+    const closeMenu = () => {
+      nav.classList.remove("is-open");
+      toggle.setAttribute("aria-expanded", "false");
+    };
+
+    toggle.addEventListener("click", () => {
+      const isOpen = nav.classList.toggle("is-open");
+      toggle.setAttribute("aria-expanded", String(isOpen));
+      if (isOpen) {
+        document.querySelector(".site-header")?.classList.remove("is-hidden");
+      }
+    });
+
+    nav.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", closeMenu);
+    });
+
+    document.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) {
+        return;
+      }
+      if (!nav.contains(target) && !toggle.contains(target)) {
+        closeMenu();
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 1180) {
+        closeMenu();
+      }
+    });
+  };
+
+  const setupFaq = () => {
+    const faqItems = Array.from(document.querySelectorAll(".faq-item"));
+    if (!faqItems.length) {
+      return;
+    }
+
+    const setState = (item, open) => {
+      const button = item.querySelector(".faq-question");
+      const answer = item.querySelector(".faq-answer");
+      if (!button || !answer) {
+        return;
+      }
+      button.setAttribute("aria-expanded", String(open));
+      answer.style.maxHeight = open ? `${answer.scrollHeight}px` : "0px";
+    };
+
+    faqItems.forEach((item, index) => {
+      setState(item, index === 0);
+      const button = item.querySelector(".faq-question");
+      if (!button) {
+        return;
+      }
+      button.addEventListener("click", () => {
+        const isExpanded = button.getAttribute("aria-expanded") === "true";
+        faqItems.forEach((entry) => setState(entry, false));
+        setState(item, !isExpanded);
+      });
+    });
+
+    window.addEventListener("resize", () => {
+      faqItems.forEach((item) => {
+        const button = item.querySelector(".faq-question");
+        const answer = item.querySelector(".faq-answer");
+        if (!button || !answer) {
+          return;
+        }
+        if (button.getAttribute("aria-expanded") === "true") {
+          answer.style.maxHeight = `${answer.scrollHeight}px`;
+        }
+      });
+    });
+  };
+
+  const setupLightbox = () => {
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImage = document.getElementById("lightbox-image");
+    const lightboxCaption = document.getElementById("lightbox-caption");
+    const closeButton = lightbox ? lightbox.querySelector("[data-lightbox-close]") : null;
+    if (!lightbox || !lightboxImage || !lightboxCaption || !closeButton) {
+      return;
+    }
+
+    const open = (src, caption, alt) => {
+      lightboxImage.setAttribute("src", src);
+      lightboxImage.setAttribute("alt", alt || caption || "Скрин отзыва");
+      lightboxCaption.textContent = caption || "";
+      lightbox.classList.add("is-open");
+      lightbox.setAttribute("aria-hidden", "false");
+      document.body.classList.add("modal-open");
+    };
+
+    const close = () => {
+      lightbox.classList.remove("is-open");
+      lightbox.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("modal-open");
+    };
+
+    document.querySelectorAll("[data-review-trigger]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const image = button.getAttribute("data-image");
+        const caption = button.getAttribute("data-caption");
+        const imageNode = button.querySelector("img");
+        const alt = imageNode ? imageNode.getAttribute("alt") : "Скрин отзыва";
+        if (image) {
+          open(image, caption, alt);
+        }
+      });
+    });
+
+    closeButton.addEventListener("click", close);
+    lightbox.addEventListener("click", (event) => {
+      if (event.target === lightbox) {
+        close();
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && lightbox.classList.contains("is-open")) {
+        close();
+      }
+    });
+  };
+
+  const setupReviewsCarousel = () => {
+    const carousels = document.querySelectorAll("[data-reviews-carousel]");
+    if (!carousels.length) {
+      return;
+    }
+
+    carousels.forEach((carousel) => {
+      const viewport = carousel.querySelector(".reviews-viewport");
+      const track = carousel.querySelector(".reviews-track");
+      const prev = carousel.querySelector("[data-reviews-prev]");
+      const next = carousel.querySelector("[data-reviews-next]");
+      if (!viewport || !track || !prev || !next) {
+        return;
+      }
+      const cards = Array.from(track.querySelectorAll(".review-card"));
+      const hasMultipleCards = cards.length > 1;
+      prev.hidden = !hasMultipleCards;
+      next.hidden = !hasMultipleCards;
+      if (!hasMultipleCards) {
+        return;
+      }
+
+      let dotsWrap = null;
+      const nextNode = carousel.nextElementSibling;
+      if (nextNode && nextNode.classList.contains("reviews-dots")) {
+        dotsWrap = nextNode;
+      } else {
+        dotsWrap = document.createElement("div");
+        dotsWrap.className = "reviews-dots";
+        carousel.insertAdjacentElement("afterend", dotsWrap);
+      }
+      dotsWrap.innerHTML = "";
+
+      const getStep = () => {
+        const card = track.querySelector(".review-card");
+        if (!card) {
+          return viewport.clientWidth;
+        }
+        const gap = Number.parseFloat(window.getComputedStyle(track).gap || "0") || 0;
+        return card.getBoundingClientRect().width + gap;
+      };
+
+      const getMaxIndex = () => {
+        const step = Math.max(getStep(), 1);
+        const maxScroll = Math.max(track.scrollWidth - viewport.clientWidth, 0);
+        return Math.max(0, Math.round(maxScroll / step));
+      };
+
+      let dots = [];
+      let dotsCount = 0;
+      const rebuildDots = () => {
+        const count = getMaxIndex() + 1;
+        if (count === dotsCount) {
+          return;
+        }
+
+        dotsCount = count;
+        dotsWrap.innerHTML = "";
+        dots = [];
+        dotsWrap.hidden = count <= 1;
+
+        for (let index = 0; index < count; index += 1) {
+          const dot = document.createElement("button");
+          dot.type = "button";
+          dot.className = "review-dot";
+          dot.setAttribute("aria-label", `Перейти к слайду ${index + 1}`);
+          dot.addEventListener("click", () => {
+            const step = getStep();
+            viewport.scrollTo({ left: step * index, behavior: "smooth" });
+          });
+          dotsWrap.appendChild(dot);
+          dots.push(dot);
+        }
+      };
+
+      const update = () => {
+        rebuildDots();
+
+        const maxScroll = Math.max(track.scrollWidth - viewport.clientWidth, 0);
+        prev.disabled = viewport.scrollLeft <= 2;
+        next.disabled = viewport.scrollLeft >= maxScroll - 2;
+
+        const step = Math.max(getStep(), 1);
+        const activeIndex = Math.max(
+          0,
+          Math.min(Math.round(viewport.scrollLeft / step), getMaxIndex())
+        );
+        dots.forEach((dot, index) => {
+          const isActive = index === activeIndex;
+          dot.classList.toggle("is-active", isActive);
+          dot.setAttribute("aria-current", isActive ? "true" : "false");
+        });
+      };
+
+      prev.addEventListener("click", () => {
+        viewport.scrollBy({ left: -getStep(), behavior: "smooth" });
+      });
+
+      next.addEventListener("click", () => {
+        viewport.scrollBy({ left: getStep(), behavior: "smooth" });
+      });
+
+      viewport.addEventListener("scroll", update, { passive: true });
+      window.addEventListener("resize", update);
+      update();
+    });
+  };
+
+  const setupReveal = () => {
+    const nodes = document.querySelectorAll("[data-reveal]");
+    if (!nodes.length) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries, currentObserver) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            currentObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
+    );
+
+    nodes.forEach((node) => observer.observe(node));
+  };
+
+  const setYear = () => {
+    const yearNode = document.getElementById("year");
+    if (yearNode) {
+      yearNode.textContent = String(new Date().getFullYear());
+    }
+  };
+
+  renderPricing();
+  renderPaymentModes();
+  renderAutoapplyPricing();
+  renderServicePillars();
+  renderServiceTariffs();
+  renderTrackCards();
+  renderTrackPage();
+  renderSalaryChart();
+
+  applyLinks();
+  setupPageActiveNav();
+  setupSmartHeader();
+  setupMobileMenu();
+  setupFaq();
+  setupLightbox();
+  setupReviewsCarousel();
+  setupReveal();
+  setYear();
+})();

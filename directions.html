@@ -1,0 +1,178 @@
+﻿<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Языки и рынок — IT Mentorship Lab</title>
+  <meta name="description" content="Таблица зарплатных ориентиров по языкам (включая Rust) и обзор фокусных треков для старта и карьерного роста.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="directions">
+  <header class="site-header" id="top">
+    <div class="container header-inner">
+      <a class="brand" href="index.html" aria-label="На главную">
+        <span class="brand-main">LEONOV CARE</span>
+        <span class="brand-sub">IT Mentorship Lab</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span class="sr-only">Открыть меню</span>
+      </button>
+      <nav class="site-nav" id="site-nav" aria-label="Основная навигация">
+        <a data-page="index" href="index.html">Главная</a>
+        <a data-page="services" href="index.html#services">Услуги</a>
+        <a data-page="directions" href="directions.html">Языки и рынок</a>
+        <a class="nav-cta" data-link="mentor" href="#">Бесплатный разбор</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="section hero" data-section>
+      <div class="container hero-grid">
+        <div class="hero-copy" data-reveal>
+          <p class="eyebrow">Языки и рынок</p>
+          <h1>Сравните языки и выберите стек под свою цель</h1>
+          <p class="lead">
+            На этой странице собраны зарплатные ориентиры по языкам и стеку, включая Rust.
+            Кликайте по строкам таблицы и смотрите подробные треки.
+          </p>
+          <p class="muted">
+            Если нужна помощь с выбором, подберём стек по вашему бэкграунду и карьерному плану.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" data-link="mentor" href="#">Собрать план под мой стек</a>
+            <a class="btn btn-ghost" href="index.html#services">Выбрать услугу</a>
+          </div>
+        </div>
+
+        <aside class="card hero-panel" data-reveal>
+          <h2>Как читать таблицу</h2>
+          <ul class="check-list">
+            <li>Сначала смотрите уровень дохода и активность рынка.</li>
+            <li>Кликайте по языку: если есть страница, откроется детальный трек.</li>
+            <li>Если страницы нет, язык всё равно доступен для обучения.</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section section-tone-blue" data-section>
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Маршруты карьеры</p>
+          <h2>Выберите формат работы под вашу задачу</h2>
+        </div>
+        <div class="cards-grid cards-2">
+          <article class="card artifact-card card-variant" data-reveal>
+            <h3>С нуля до оффера</h3>
+            <p>Для старта в IT с нуля: от базы до первых офферов.</p>
+            <p class="service-inline-price">от 34 900 ₽ / месяц</p>
+            <a class="btn btn-link" href="zero-offer.html">Открыть раздел</a>
+          </article>
+          <article class="card artifact-card card-variant-alt" data-reveal>
+            <h3>Подготовка к собеседованиям</h3>
+            <p>Mock-интервью, техника ответов и уверенность на реальных этапах.</p>
+            <p class="service-inline-price">от 5 900 ₽</p>
+            <a class="btn btn-link" href="interview-prep.html">Открыть раздел</a>
+          </article>
+          <article class="card artifact-card card-variant-alt" data-reveal>
+            <h3>Рост грейда и зарплаты</h3>
+            <p>Для опытных специалистов: рост уровня, ответственности и дохода.</p>
+            <p class="service-inline-price">от 32 900 ₽</p>
+            <a class="btn btn-link" href="grade-salary.html">Открыть раздел</a>
+          </article>
+          <article class="card artifact-card card-variant" data-reveal>
+            <h3>Автоотклики</h3>
+            <p>Сервис для стабильного потока откликов и проверки гипотез на рынке.</p>
+            <p class="service-inline-price">от 4 900 ₽</p>
+            <a class="btn btn-link" href="autoapply.html">Открыть раздел</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-muted" id="salary-chart-section" data-section>
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Интерактивный график</p>
+          <h2>Зарплатные ориентиры по языкам и стеку</h2>
+          <p class="muted">Сортируйте по уровню зарплаты и переходите к подробным трекам одним кликом.</p>
+        </div>
+
+        <article class="card chart-card" data-reveal>
+          <div class="chart-controls" role="group" aria-label="Сортировка графика">
+            <button class="chip-btn is-active" type="button" data-chart-sort="desc">Лидеры</button>
+            <button class="chip-btn" type="button" data-chart-sort="asc">От меньшей</button>
+          </div>
+          <div id="salary-chart" class="salary-chart" aria-live="polite"></div>
+          <p id="salary-chart-detail" class="chart-detail muted">Нажмите на строку, чтобы открыть трек или получить персональные рекомендации.</p>
+          <p id="salary-chart-source" class="muted chart-source"></p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="directions-grid-section" data-section>
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Что делают специалисты</p>
+          <h2>Коротко по каждому направлению</h2>
+        </div>
+        <div id="directions-grid" class="cards-grid cards-2"></div>
+      </div>
+    </section>
+
+    <section class="section section-muted" id="pick-path" data-section>
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Как выбрать с нуля</p>
+          <h2>Простой алгоритм выбора трека</h2>
+        </div>
+        <div class="cards-grid cards-3">
+          <article class="card artifact-card" data-reveal>
+            <h3>Шаг 1: интерес к задачам</h3>
+            <p>Смотрите, где вам ближе продуктовые API, высоконагруженные сервисы или интерфейсы.</p>
+          </article>
+          <article class="card artifact-card" data-reveal>
+            <h3>Шаг 2: ритм обучения</h3>
+            <p>Выбирайте трек, где готовы стабильно практиковаться 6–10 часов в неделю.</p>
+          </article>
+          <article class="card artifact-card" data-reveal>
+            <h3>Шаг 3: проверка на практике</h3>
+            <p>Делаем тестовый план на 2–3 недели и смотрим, как идёт прогресс в реальных задачах.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-cta" id="contact" data-section>
+      <div class="container cta-wrap" data-reveal>
+        <div>
+          <p class="eyebrow">Нужен выбор без угадываний</p>
+          <h2>Напишите в Telegram — разберём ваш бэкграунд и подберём направление</h2>
+          <p class="muted">Начнём с бесплатной диагностики и решим, какой трек брать первым.</p>
+        </div>
+        <div class="cta-actions">
+          <a class="btn btn-primary btn-lg" data-link="mentor" href="#">Разобрать мой старт</a>
+          <a class="btn btn-ghost btn-lg" href="index.html">Вернуться на главную</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© <span id="year"></span> ИП Олег Леонов</p>
+      <p class="footer-tax">ИП Олег Леонов • ИНН: <span class="footer-tax-placeholder">[добавьте ваш ИНН]</span></p>
+      <a class="footer-offer-link" href="offer.html">Публичная оферта</a>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="script.js" defer></script>
+</body>
+</html>
+
+
