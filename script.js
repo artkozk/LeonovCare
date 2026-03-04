@@ -100,17 +100,19 @@
   const buildStartPayload = ({
     route,
     serviceSlug,
+    planSlug,
     source,
     clicks
   }) => {
     const routeToken = normalizeRoute(route || routeForService(serviceSlug));
     const serviceToken = compactToken(serviceSlug || "general", 10) || "general";
-    const sourceToken = compactToken(source || "site", 16) || "site";
+    const planToken = compactToken(planSlug || "na", 8) || "na";
+    const sourceToken = compactToken(source || "site", 12) || "site";
     const clicksValue = Number.isFinite(Number(clicks))
       ? Math.max(Math.round(Number(clicks)), 0)
       : 0;
     const clickToken = `c${String(clicksValue).slice(0, 4) || "0"}`;
-    return `lc1_${routeToken}_${serviceToken}_${sourceToken}_${clickToken}`.slice(0, 63);
+    return `lc2_${routeToken}_${serviceToken}_${planToken}_${sourceToken}_${clickToken}`.slice(0, 63);
   };
 
   const buildRouteMessage = ({
@@ -152,6 +154,7 @@
       serviceSlug: "",
       serviceTitle: "",
       planTitle: "",
+      planKey: "",
       planPrice: "",
       sourceButton: "",
       autoapplyClicks: 0,
@@ -217,6 +220,7 @@
     const payload = buildStartPayload({
       route: routeForService(cart.serviceSlug),
       serviceSlug: cart.serviceSlug,
+      planSlug: cart.planKey || cart.planTitle,
       source: cart.sourceButton || cart.planTitle || "tariff",
       clicks: cart.autoapplyClicks
     });
@@ -231,6 +235,7 @@
     route,
     source,
     serviceSlug = "",
+    planSlug = "",
     clicks = 0,
     extraMessage = ""
   }) => {
@@ -238,6 +243,7 @@
     const payload = buildStartPayload({
       route: routeToken,
       serviceSlug,
+      planSlug,
       source,
       clicks
     });
@@ -276,11 +282,13 @@
         const cart = readCartState();
         const serviceSlug = node.getAttribute("data-bot-service")
           || (route === "auto" ? "autoapply" : "");
+        const planSlug = node.getAttribute("data-bot-plan") || "";
         const clicks = route === "auto" ? cart.autoapplyClicks : 0;
         href = buildBotRouteLink({
           route,
           source,
           serviceSlug,
+          planSlug,
           clicks
         });
       }
@@ -414,9 +422,10 @@
     }
 
     root.innerHTML = serviceData.plans
-      .map((plan) => {
+      .map((plan, index) => {
         const serviceTitle = serviceTitleMap[page] || page;
         const installments = (serviceData.note || "").toLowerCase().includes("платеж");
+        const planKey = compactToken(plan.planKey || plan.key || plan.slug || plan.title || `p${index + 1}`, 8) || `p${index + 1}`;
         return `
           <article class="card pricing-card ${plan.featured ? "is-featured" : ""}" data-reveal>
             <span class="pricing-badge">${plan.badge || "Тариф"}</span>
@@ -433,6 +442,7 @@
               data-cart-service="${escapeAttr(page)}"
               data-cart-service-title="${escapeAttr(serviceTitle)}"
               data-cart-plan="${escapeAttr(plan.title || "")}"
+              data-cart-plan-key="${escapeAttr(planKey)}"
               data-cart-price="${escapeAttr(plan.price || "")}"
               data-cart-source="${escapeAttr(plan.cta || plan.title || "")}"
               data-cart-installments="${installments ? "true" : "false"}"
@@ -690,6 +700,7 @@
         || baseState.serviceTitle
         || "";
       const planTitle = button.getAttribute("data-cart-plan") || baseState.planTitle || "";
+      const planKey = button.getAttribute("data-cart-plan-key") || baseState.planKey || "";
       const planPrice = button.getAttribute("data-cart-price") || baseState.planPrice || "";
       const sourceButton = button.getAttribute("data-cart-source")
         || (button.textContent || "").trim()
@@ -702,6 +713,7 @@
         serviceSlug,
         serviceTitle,
         planTitle,
+        planKey,
         planPrice,
         sourceButton,
         installments: installments || baseState.installments
@@ -793,6 +805,7 @@
         serviceSlug: "autoapply",
         serviceTitle: serviceTitleMap["autoapply"],
         planTitle: `Автоотклики: ${formattedClicks}`,
+        planKey: `auto${calc.clicks}`,
         planPrice: formatMoney(calc.total),
         sourceButton: "autoapply-slider",
         autoapplyClicks: calc.clicks,
