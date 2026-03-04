@@ -40,10 +40,11 @@
             автоотклики закрывают рутинную часть и помогают не терять темп.
           </p>
           <p class="muted">
+            Базовая цена 7 ₽ за отклик, первые 50 откликов бесплатно при объёме до 200.
             Подходит и для самостоятельного использования, и в связке с менторством.
           </p>
           <div class="hero-actions">
-            <a class="btn btn-primary" data-link="bot" href="#">Подключить автоотклики</a>
+            <a class="btn btn-primary" data-link="bot" data-bot-route="auto" data-bot-source="auto-hero" href="#">Подключить автоотклики</a>
             <a class="btn btn-ghost" data-link="channel" href="#">Вступить в сообщество</a>
           </div>
         </div>
@@ -133,6 +134,37 @@
             <ul class="pricing-list" id="autoapply-subscriptions"></ul>
           </article>
         </div>
+        <article class="card autoapply-calculator" data-reveal>
+          <div class="autoapply-calculator-head">
+            <h3>Калькулятор автооткликов</h3>
+            <p class="muted">Выберите нужное количество откликов и сразу передайте выбор в Telegram-бота.</p>
+          </div>
+          <div class="autoapply-slider-meta">
+            <p><strong>Вы выбрали:</strong> <span id="autoapply-slider-value">120 откликов</span></p>
+            <p><strong>Тариф:</strong> <span id="autoapply-slider-rate">7 ₽ / отклик</span></p>
+            <p><strong>Итог:</strong> <span id="autoapply-slider-total">490 ₽</span></p>
+          </div>
+          <input
+            id="autoapply-slider"
+            class="autoapply-slider"
+            type="range"
+            min="50"
+            max="1500"
+            step="10"
+            value="120"
+            aria-label="Количество автооткликов"
+          >
+          <p id="autoapply-slider-free" class="muted autoapply-slider-note">Из них 50 откликов бесплатны.</p>
+          <p id="autoapply-slider-note" class="muted autoapply-slider-note">Пробный формат: можно начать с малого объёма и проверить конверсию.</p>
+          <label class="autoapply-installments">
+            <input id="autoapply-installments" type="checkbox">
+            <span>Хочу обсудить оплату в несколько платежей</span>
+          </label>
+          <div class="hero-actions autoapply-calculator-actions">
+            <a class="btn btn-primary" id="autoapply-slider-btn" href="#">Передать выбор в Telegram-бота</a>
+            <a class="btn btn-ghost" data-link="mentor" href="#">Обсудить стратегию с ментором</a>
+          </div>
+        </article>
         <p class="autoapply-disclaimer muted" data-reveal>
           Не обещаем оффер. Мы автоматизируем рутину поиска и работаем корректно,
           без заявлений про обход правил площадок.
@@ -259,7 +291,7 @@
           <p class="muted">Сначала фиксируем цель и объём, потом выбираем пакет или подписку.</p>
         </div>
         <div class="cta-actions">
-          <a class="btn btn-primary btn-lg" data-link="bot" href="#">Получить автоотклики</a>
+          <a class="btn btn-primary btn-lg" data-link="bot" data-bot-route="auto" data-bot-source="auto-cta" href="#">Получить автоотклики</a>
           <a class="btn btn-ghost btn-lg" data-link="channel" href="#">Вступить в сообщество</a>
         </div>
       </div>

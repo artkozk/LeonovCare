@@ -12,7 +12,7 @@
     return `${new Intl.NumberFormat("ru-RU").format(num)} ₽`;
   };
 
-  const toTelegramUrl = (baseUrl, message) => {
+  const toTelegramUrl = (baseUrl, message, extraParams = {}) => {
     if (!baseUrl) {
       return "#";
     }
@@ -21,29 +21,270 @@
       if (message) {
         url.searchParams.set("text", message);
       }
+      Object.entries(extraParams).forEach(([key, value]) => {
+        if (value !== null && value !== undefined && `${value}`.trim() !== "") {
+          url.searchParams.set(key, String(value));
+        }
+      });
       return url.toString();
     } catch (error) {
+      const params = new URLSearchParams();
+      if (message) {
+        params.set("text", message);
+      }
+      Object.entries(extraParams).forEach(([key, value]) => {
+        if (value !== null && value !== undefined && `${value}`.trim() !== "") {
+          params.set(key, String(value));
+        }
+      });
+      const serialized = params.toString();
+      if (!serialized) {
+        return baseUrl;
+      }
       const separator = baseUrl.includes("?") ? "&" : "?";
-      return message ? `${baseUrl}${separator}text=${encodeURIComponent(message)}` : baseUrl;
+      return `${baseUrl}${separator}${serialized}`;
     }
   };
 
+  const botBaseUrl = (config.botUrl && config.botUrl.trim())
+    ? config.botUrl.trim()
+    : config.mentorUrl;
+
   const mentorLink = toTelegramUrl(config.mentorUrl, config.prefilledMessage);
   const channelLink = config.channelUrl || "#";
-  const botLink = (config.botUrl && config.botUrl.trim())
-    ? config.botUrl.trim()
-    : toTelegramUrl(config.mentorUrl, config.prefilledMessage);
+  const cartStorageKey = "lc_tariff_cart_v1";
+
+  const serviceTitleMap = {
+    "zero-offer": "С нуля до оффера",
+    "interview-prep": "Подготовка к собеседованиям",
+    "grade-salary": "Рост грейда и зарплаты",
+    "autoapply": "Автоотклики"
+  };
+
+  const routeByService = {
+    "zero-offer": "student",
+    "interview-prep": "student",
+    "grade-salary": "student",
+    "autoapply": "auto"
+  };
+
+  const routeLabels = {
+    home: "Главное меню",
+    student: "Раздел \"Я ученик\"",
+    auto: "Раздел \"Автоотклики\"",
+    materials: "Раздел \"Бесплатные материалы\""
+  };
+
+  const escapeHtml = (value) => String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+  const escapeAttr = (value) => escapeHtml(value).replace(/"/g, "&quot;");
+
+  const compactToken = (value, max = 14) => String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "")
+    .slice(0, max);
+
+  const normalizeRoute = (route) => {
+    const token = compactToken(route || "home", 16);
+    if (token === "student" || token === "auto" || token === "materials" || token === "home") {
+      return token;
+    }
+    return "home";
+  };
+
+  const routeForService = (serviceSlug) => routeByService[serviceSlug] || "home";
+
+  const buildStartPayload = ({
+    route,
+    serviceSlug,
+    source,
+    clicks
+  }) => {
+    const routeToken = normalizeRoute(route || routeForService(serviceSlug));
+    const serviceToken = compactToken(serviceSlug || "general", 10) || "general";
+    const sourceToken = compactToken(source || "site", 16) || "site";
+    const clicksValue = Number.isFinite(Number(clicks))
+      ? Math.max(Math.round(Number(clicks)), 0)
+      : 0;
+    const clickToken = `c${String(clicksValue).slice(0, 4) || "0"}`;
+    return `lc1_${routeToken}_${serviceToken}_${sourceToken}_${clickToken}`.slice(0, 63);
+  };
+
+  const buildRouteMessage = ({
+    route,
+    source,
+    planTitle,
+    planPrice,
+    clicks,
+    totalPrice,
+    installments
+  }) => {
+    const routeToken = normalizeRoute(route);
+    const lines = ["Привет! Я перешел(ла) с сайта в бот."];
+    lines.push(`Нужный раздел: ${routeLabels[routeToken] || routeLabels.home}.`);
+    if (source) {
+      lines.push(`Источник кнопки: ${source}.`);
+    }
+    if (planTitle) {
+      lines.push(`Выбранный тариф: ${planTitle}.`);
+    }
+    if (planPrice) {
+      lines.push(`Стоимость на сайте: ${planPrice}.`);
+    }
+    if (Number(clicks) > 0) {
+      lines.push(`Количество откликов: ${clicks}.`);
+      if (Number(totalPrice) > 0) {
+        lines.push(`Расчет: ${formatMoney(totalPrice)}.`);
+      }
+    }
+    if (installments) {
+      lines.push("Хочу обсудить оплату в несколько платежей.");
+    }
+    lines.push("Подскажите следующий шаг.");
+    return lines.join("\n");
+  };
+
+  const readCartState = () => {
+    const fallback = {
+      serviceSlug: "",
+      serviceTitle: "",
+      planTitle: "",
+      planPrice: "",
+      sourceButton: "",
+      autoapplyClicks: 0,
+      totalPrice: 0,
+      installments: false
+    };
+
+    try {
+      const raw = window.localStorage.getItem(cartStorageKey);
+      if (!raw) {
+        return fallback;
+      }
+      const parsed = JSON.parse(raw);
+      return {
+        ...fallback,
+        ...parsed
+      };
+    } catch (error) {
+      return fallback;
+    }
+  };
+
+  const writeCartState = (nextState) => {
+    try {
+      window.localStorage.setItem(cartStorageKey, JSON.stringify(nextState));
+    } catch (error) {
+      // Ignore storage errors (private mode, disabled storage).
+    }
+  };
+
+  const buildCartMessage = (cart) => {
+    const lines = [
+      "Привет! Хочу оформить тариф через сайт."
+    ];
+
+    if (cart.serviceTitle) {
+      lines.push(`Направление: ${cart.serviceTitle}`);
+    }
+    if (cart.planTitle) {
+      lines.push(`Тариф: ${cart.planTitle}`);
+    }
+    if (cart.planPrice) {
+      lines.push(`Стоимость на сайте: ${cart.planPrice}`);
+    }
+    if (cart.sourceButton) {
+      lines.push(`Кнопка на сайте: ${cart.sourceButton}`);
+    }
+    if (Number(cart.autoapplyClicks) > 0) {
+      lines.push(`Откликов: ${cart.autoapplyClicks}`);
+      if (Number(cart.totalPrice) > 0) {
+        lines.push(`Расчёт автооткликов: ${formatMoney(cart.totalPrice)}`);
+      }
+    }
+    if (cart.installments) {
+      lines.push("Хочу разделить оплату на несколько платежей.");
+    }
+
+    lines.push("Пожалуйста, подтвердите детали и шаги старта.");
+    return lines.join("\n");
+  };
+
+  const buildBotCheckoutLink = (cart) => {
+    const payload = buildStartPayload({
+      route: routeForService(cart.serviceSlug),
+      serviceSlug: cart.serviceSlug,
+      source: cart.sourceButton || cart.planTitle || "tariff",
+      clicks: cart.autoapplyClicks
+    });
+    const message = buildCartMessage(cart);
+    return toTelegramUrl(botBaseUrl, message, {
+      start: payload,
+      startapp: payload
+    });
+  };
+
+  const buildBotRouteLink = ({
+    route,
+    source,
+    serviceSlug = "",
+    clicks = 0,
+    extraMessage = ""
+  }) => {
+    const routeToken = normalizeRoute(route);
+    const payload = buildStartPayload({
+      route: routeToken,
+      serviceSlug,
+      source,
+      clicks
+    });
+    const baseMessage = buildRouteMessage({
+      route: routeToken,
+      source,
+      clicks
+    });
+    const message = extraMessage
+      ? `${baseMessage}\n${extraMessage}`
+      : baseMessage;
+    return toTelegramUrl(botBaseUrl, message, {
+      start: payload,
+      startapp: payload
+    });
+  };
 
   const applyLinks = () => {
     const linkMap = {
       mentor: mentorLink,
-      channel: channelLink,
-      bot: botLink
+      channel: channelLink
     };
 
     document.querySelectorAll("[data-link]").forEach((node) => {
       const type = node.getAttribute("data-link");
-      const href = linkMap[type] || "#";
+      let href = linkMap[type] || "#";
+
+      if (type === "bot") {
+        const explicitRoute = node.getAttribute("data-bot-route");
+        const hasRoadmapWord = (node.textContent || "").toLowerCase().includes("roadmap");
+        const route = explicitRoute || (hasRoadmapWord ? "materials" : "home");
+        const source = node.getAttribute("data-bot-source")
+          || node.getAttribute("id")
+          || document.body.dataset.page
+          || "site";
+        const cart = readCartState();
+        const serviceSlug = node.getAttribute("data-bot-service")
+          || (route === "auto" ? "autoapply" : "");
+        const clicks = route === "auto" ? cart.autoapplyClicks : 0;
+        href = buildBotRouteLink({
+          route,
+          source,
+          serviceSlug,
+          clicks
+        });
+      }
+
       node.setAttribute("href", href);
       if (href !== "#") {
         node.setAttribute("target", "_blank");
@@ -54,8 +295,8 @@
     const botNote = document.querySelector("[data-bot-note]");
     if (botNote) {
       botNote.textContent = (config.botUrl && config.botUrl.trim())
-        ? "Бот активен: можно перейти напрямую."
-        : "Бот обновляется. Кнопка пока ведёт в Telegram к ментору с предзаполненным сообщением.";
+        ? "Бот активен: выбор тарифа передается с предзаполнением."
+        : "Бот не указан: кнопка ведет в Telegram к ментору с предзаполненной заявкой.";
     }
   };
 
@@ -173,18 +414,33 @@
     }
 
     root.innerHTML = serviceData.plans
-      .map((plan) => `
-        <article class="card pricing-card ${plan.featured ? "is-featured" : ""}" data-reveal>
-          <span class="pricing-badge">${plan.badge || "Тариф"}</span>
-          <h3>${plan.title}</h3>
-          <p class="muted">${plan.subtitle || ""}</p>
-          <p class="pricing-price">${plan.price || "По запросу"}</p>
-          <ul class="pricing-list">
-            ${(plan.features || []).map((item) => `<li>${item}</li>`).join("")}
-          </ul>
-          <a class="btn btn-primary" data-link="${plan.linkType || "mentor"}" href="#">${plan.cta || "Оставить заявку"}</a>
-        </article>
-      `)
+      .map((plan) => {
+        const serviceTitle = serviceTitleMap[page] || page;
+        const installments = (serviceData.note || "").toLowerCase().includes("платеж");
+        return `
+          <article class="card pricing-card ${plan.featured ? "is-featured" : ""}" data-reveal>
+            <span class="pricing-badge">${plan.badge || "Тариф"}</span>
+            <h3>${plan.title}</h3>
+            <p class="muted">${plan.subtitle || ""}</p>
+            <p class="pricing-price">${plan.price || "По запросу"}</p>
+            <ul class="pricing-list">
+              ${(plan.features || []).map((item) => `<li>${item}</li>`).join("")}
+            </ul>
+            <a
+              class="btn btn-primary"
+              data-link="${plan.linkType || "mentor"}"
+              data-cart-add="true"
+              data-cart-service="${escapeAttr(page)}"
+              data-cart-service-title="${escapeAttr(serviceTitle)}"
+              data-cart-plan="${escapeAttr(plan.title || "")}"
+              data-cart-price="${escapeAttr(plan.price || "")}"
+              data-cart-source="${escapeAttr(plan.cta || plan.title || "")}"
+              data-cart-installments="${installments ? "true" : "false"}"
+              href="#"
+            >${plan.cta || "Оставить заявку"}</a>
+          </article>
+        `;
+      })
       .join("");
   };
 
@@ -209,7 +465,13 @@
     if (directionsGrid) {
       directionsGrid.innerHTML = tracks
         .map((track) => {
-          const topBuild = (track.whatBuild || []).slice(0, 3)
+          const highlights = [
+            ...(track.whyLanguage || []).slice(0, 2),
+            (track.beginnerBenefits || [])[0],
+            (track.experiencedBenefits || [])[0]
+          ]
+            .filter(Boolean)
+            .slice(0, 3)
             .map((item) => `<li>${item}</li>`)
             .join("");
 
@@ -217,7 +479,7 @@
             <article class="card direction-detail-card" data-reveal>
               <h3>${track.name}</h3>
               <p class="muted">${track.short}</p>
-              <ul class="pricing-list">${topBuild}</ul>
+              <ul class="pricing-list">${highlights}</ul>
               <a class="btn btn-primary" href="${track.page}">Подробнее о ${track.name}</a>
             </article>
           `;
@@ -288,6 +550,9 @@
     );
 
     renderListCards("track-what-build", track.whatBuild);
+    renderListCards("track-why-language", track.whyLanguage);
+    renderListCards("track-beginner-benefits", track.beginnerBenefits);
+    renderListCards("track-experienced-benefits", track.experiencedBenefits);
     renderListCards("track-interview-focus", track.interviewFocus);
     renderListCards("track-first-projects", track.firstProjects);
     renderRoadmapCards("track-roadmap", track.roadmap);
@@ -384,6 +649,173 @@
     }
 
     render();
+  };
+
+  const calcAutoapplyPrice = (rawClicks) => {
+    const clicks = Math.max(Number.parseInt(rawClicks, 10) || 0, 0);
+    let perClick = 7;
+    let freeClicks = 0;
+
+    if (clicks < 200) {
+      perClick = 7;
+      freeClicks = Math.min(clicks, 50);
+    } else if (clicks < 500) {
+      perClick = 6;
+    } else {
+      perClick = 5;
+    }
+
+    const paidClicks = Math.max(clicks - freeClicks, 0);
+    const total = paidClicks * perClick;
+
+    return {
+      clicks,
+      perClick,
+      freeClicks,
+      paidClicks,
+      total
+    };
+  };
+
+  const setupTariffCartLinks = () => {
+    const buttons = Array.from(document.querySelectorAll("[data-cart-add]"));
+    if (!buttons.length) {
+      return;
+    }
+
+    const buildStateForButton = (button, baseState) => {
+      const serviceSlug = button.getAttribute("data-cart-service") || baseState.serviceSlug || "";
+      const serviceTitle = button.getAttribute("data-cart-service-title")
+        || serviceTitleMap[serviceSlug]
+        || baseState.serviceTitle
+        || "";
+      const planTitle = button.getAttribute("data-cart-plan") || baseState.planTitle || "";
+      const planPrice = button.getAttribute("data-cart-price") || baseState.planPrice || "";
+      const sourceButton = button.getAttribute("data-cart-source")
+        || (button.textContent || "").trim()
+        || baseState.sourceButton
+        || "";
+      const installments = button.getAttribute("data-cart-installments") === "true";
+
+      return {
+        ...baseState,
+        serviceSlug,
+        serviceTitle,
+        planTitle,
+        planPrice,
+        sourceButton,
+        installments: installments || baseState.installments
+      };
+    };
+
+    const setLink = (button, state) => {
+      const href = buildBotCheckoutLink(state);
+      button.setAttribute("href", href);
+      button.setAttribute("target", "_blank");
+      button.setAttribute("rel", "noopener noreferrer");
+    };
+
+    buttons.forEach((button) => {
+      const refreshLink = () => {
+        const state = buildStateForButton(button, readCartState());
+        setLink(button, state);
+      };
+
+      refreshLink();
+
+      button.addEventListener("mouseenter", refreshLink);
+      button.addEventListener("focus", refreshLink);
+      button.addEventListener("click", () => {
+        const state = buildStateForButton(button, readCartState());
+        writeCartState(state);
+        setLink(button, state);
+      });
+    });
+  };
+
+  const setupAutoapplyCalculator = () => {
+    const slider = document.getElementById("autoapply-slider");
+    if (!(slider instanceof HTMLInputElement)) {
+      return;
+    }
+
+    const valueNode = document.getElementById("autoapply-slider-value");
+    const totalNode = document.getElementById("autoapply-slider-total");
+    const rateNode = document.getElementById("autoapply-slider-rate");
+    const noteNode = document.getElementById("autoapply-slider-note");
+    const freeNode = document.getElementById("autoapply-slider-free");
+    const checkoutButton = document.getElementById("autoapply-slider-btn");
+    const installmentsToggle = document.getElementById("autoapply-installments");
+
+    const setCheckoutLink = (state) => {
+      if (!(checkoutButton instanceof HTMLAnchorElement)) {
+        return;
+      }
+      checkoutButton.setAttribute("href", buildBotCheckoutLink(state));
+      checkoutButton.setAttribute("target", "_blank");
+      checkoutButton.setAttribute("rel", "noopener noreferrer");
+    };
+
+    const sync = () => {
+      const calc = calcAutoapplyPrice(slider.value);
+      const formattedClicks = new Intl.NumberFormat("ru-RU").format(calc.clicks);
+      const installments = Boolean(
+        installmentsToggle instanceof HTMLInputElement
+        && installmentsToggle.checked
+      );
+
+      if (valueNode) {
+        valueNode.textContent = `${formattedClicks} откликов`;
+      }
+
+      if (totalNode) {
+        totalNode.textContent = formatMoney(calc.total);
+      }
+
+      if (rateNode) {
+        rateNode.textContent = `${calc.perClick} ₽ / отклик`;
+      }
+
+      if (freeNode) {
+        freeNode.textContent = calc.freeClicks > 0
+          ? `Из них ${calc.freeClicks} откликов бесплатны.`
+          : "Бесплатные отклики уже использованы, действует тариф по объёму.";
+      }
+
+      if (noteNode) {
+        noteNode.textContent = calc.clicks < 200
+          ? "Пробный формат: можно начать с малого объёма и проверить конверсию."
+          : "Объём уже достаточный для стабильной воронки ответов от рынка.";
+      }
+
+      const state = {
+        ...readCartState(),
+        serviceSlug: "autoapply",
+        serviceTitle: serviceTitleMap["autoapply"],
+        planTitle: `Автоотклики: ${formattedClicks}`,
+        planPrice: formatMoney(calc.total),
+        sourceButton: "autoapply-slider",
+        autoapplyClicks: calc.clicks,
+        totalPrice: calc.total,
+        installments
+      };
+
+      writeCartState(state);
+      setCheckoutLink(state);
+    };
+
+    slider.addEventListener("input", sync);
+    slider.addEventListener("change", sync);
+
+    if (installmentsToggle instanceof HTMLInputElement) {
+      installmentsToggle.addEventListener("change", sync);
+    }
+
+    if (checkoutButton instanceof HTMLAnchorElement) {
+      checkoutButton.addEventListener("click", sync);
+    }
+
+    sync();
   };
 
   const setupPageActiveNav = () => {
@@ -727,6 +1159,8 @@
   renderSalaryChart();
 
   applyLinks();
+  setupTariffCartLinks();
+  setupAutoapplyCalculator();
   setupPageActiveNav();
   setupSmartHeader();
   setupMobileMenu();

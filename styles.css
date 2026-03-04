@@ -698,6 +698,59 @@ body.is-scrolled .site-header {
   max-width: 760px;
 }
 
+.autoapply-calculator {
+  margin-top: 18px;
+  padding: 24px;
+  background: linear-gradient(145deg, #ffffff 0%, #f5fbff 60%, #f4fffa 100%);
+}
+
+.autoapply-calculator-head {
+  margin-bottom: 14px;
+}
+
+.autoapply-slider-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.autoapply-slider-meta p {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #d9e5f7;
+  background: #ffffff;
+  font-size: 0.93rem;
+}
+
+.autoapply-slider {
+  width: 100%;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.autoapply-slider-note {
+  margin: 8px 0 0;
+}
+
+.autoapply-installments {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-text-muted);
+}
+
+.autoapply-installments input {
+  width: 16px;
+  height: 16px;
+}
+
+.autoapply-calculator-actions {
+  margin-top: 14px;
+}
+
 .reviews-wrap {
   margin-top: 20px;
 }
@@ -1110,6 +1163,16 @@ body.is-scrolled .site-header {
   background: linear-gradient(to bottom right, var(--neutral-0), #f4fbf8);
 }
 
+.artifact-card > .cards-grid {
+  margin-top: 10px;
+}
+
+.artifact-card > .cards-grid .artifact-card {
+  padding: 14px 16px;
+  box-shadow: none;
+  background: var(--neutral-50);
+}
+
 .split-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
@@ -1360,6 +1423,10 @@ body.is-scrolled .site-header {
   }
 
   .autoapply-tariff-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .autoapply-slider-meta {
     grid-template-columns: 1fr;
   }
 
