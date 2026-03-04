@@ -1,6 +1,6 @@
 const mentorUrl = "https://t.me/leonovcare";
 const channelUrl = "https://t.me/olegleonoff";
-const botUrl = "";
+const botUrl = "https://t.me/Leonov_Care_bot";
 const prefilledMessage = "Привет! Хочу выбрать тариф и получить персональный план обучения/поиска работы.";
 
 const packagePrices = {
