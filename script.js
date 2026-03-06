@@ -56,21 +56,22 @@
 
   const serviceTitleMap = {
     "zero-offer": "С нуля до оффера",
-    "interview-prep": "Подготовка к собеседованиям",
-    "grade-salary": "Рост грейда и зарплаты",
+    "interview-prep": "После курсов до оффера",
+    "grade-salary": "Увеличение зарплаты",
     "autoapply": "Автоотклики"
   };
 
   const routeByService = {
-    "zero-offer": "student",
-    "interview-prep": "student",
-    "grade-salary": "student",
+    "zero-offer": "enroll",
+    "interview-prep": "enroll",
+    "grade-salary": "enroll",
     "autoapply": "auto"
   };
 
   const routeLabels = {
     home: "Главное меню",
     student: "Раздел \"Я ученик\"",
+    enroll: "Раздел \"Вступить на обучение\"",
     auto: "Раздел \"Автоотклики\"",
     materials: "Раздел \"Бесплатные материалы\""
   };
@@ -89,7 +90,7 @@
 
   const normalizeRoute = (route) => {
     const token = compactToken(route || "home", 16);
-    if (token === "student" || token === "auto" || token === "materials" || token === "home") {
+    if (token === "student" || token === "auto" || token === "materials" || token === "enroll" || token === "home") {
       return token;
     }
     return "home";
@@ -226,8 +227,7 @@
     });
     const message = buildCartMessage(cart);
     return toTelegramUrl(botBaseUrl, message, {
-      start: payload,
-      startapp: payload
+      start: payload
     });
   };
 
@@ -256,8 +256,7 @@
       ? `${baseMessage}\n${extraMessage}`
       : baseMessage;
     return toTelegramUrl(botBaseUrl, message, {
-      start: payload,
-      startapp: payload
+      start: payload
     });
   };
 
@@ -303,7 +302,7 @@
     const botNote = document.querySelector("[data-bot-note]");
     if (botNote) {
       botNote.textContent = (config.botUrl && config.botUrl.trim())
-        ? "Бот активен: выбор тарифа передается с предзаполнением."
+        ? "Бот активен: внутри бесплатные материалы, roadmap, автоотклики, вступление на обучение и доступ в сообщество."
         : "Бот не указан: кнопка ведет в Telegram к ментору с предзаполненной заявкой.";
     }
   };
@@ -426,12 +425,16 @@
         const serviceTitle = serviceTitleMap[page] || page;
         const installments = (serviceData.note || "").toLowerCase().includes("платеж");
         const planKey = compactToken(plan.planKey || plan.key || plan.slug || plan.title || `p${index + 1}`, 8) || `p${index + 1}`;
+        const priceValue = plan.price || "По запросу";
+        const priceHtml = plan.oldPrice
+          ? `<span class="price-old">${plan.oldPrice}</span><span class="price-new">${priceValue}</span>`
+          : priceValue;
         return `
           <article class="card pricing-card ${plan.featured ? "is-featured" : ""}" data-reveal>
             <span class="pricing-badge">${plan.badge || "Тариф"}</span>
             <h3>${plan.title}</h3>
             <p class="muted">${plan.subtitle || ""}</p>
-            <p class="pricing-price">${plan.price || "По запросу"}</p>
+            <p class="pricing-price">${priceHtml}</p>
             <ul class="pricing-list">
               ${(plan.features || []).map((item) => `<li>${item}</li>`).join("")}
             </ul>
@@ -443,7 +446,7 @@
               data-cart-service-title="${escapeAttr(serviceTitle)}"
               data-cart-plan="${escapeAttr(plan.title || "")}"
               data-cart-plan-key="${escapeAttr(planKey)}"
-              data-cart-price="${escapeAttr(plan.price || "")}"
+              data-cart-price="${escapeAttr(priceValue)}"
               data-cart-source="${escapeAttr(plan.cta || plan.title || "")}"
               data-cart-installments="${installments ? "true" : "false"}"
               href="#"
@@ -633,7 +636,7 @@
           }
 
           if (detailNode) {
-            detailNode.textContent = `${name}: ориентир ${formatMoney(value)}. Отдельная страница пока не добавлена, но язык можно взять в обучение.`;
+            detailNode.textContent = `${name}: ориентир ${formatMoney(value)}. По этому языку можно открыть roadmap и материалы в Telegram-боте.`;
           }
         });
       });

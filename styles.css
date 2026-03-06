@@ -871,8 +871,9 @@ body.is-scrolled .site-header {
 
 .media-shell img {
   width: 100%;
-  aspect-ratio: 3 / 4;
-  object-fit: cover;
+  aspect-ratio: 9 / 16;
+  object-fit: contain;
+  background: #0e1420;
 }
 
 .review-card figcaption {
@@ -906,10 +907,27 @@ body.is-scrolled .site-header {
 }
 
 .pricing-price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
   font-size: 1.58rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   margin: 0;
+}
+
+.pricing-price .price-old {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  opacity: 0.85;
+}
+
+.pricing-price .price-new {
+  color: var(--accent);
 }
 
 .pricing-list {

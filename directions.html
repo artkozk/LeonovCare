@@ -1,10 +1,11 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Языки и рынок — IT Mentorship Lab</title>
-  <meta name="description" content="Таблица зарплатных ориентиров по языкам (включая Rust) и обзор фокусных треков для старта и карьерного роста.">
+  <meta name="description" content="Сравнение IT-направлений по задачам и рынку: выберите язык, откройте roadmap в боте и стартуйте с поддержкой ментора.">
+  <link rel="canonical" href="https://leonovcare.ru/directions.html">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body data-page="directions">
@@ -36,24 +37,24 @@
           <p class="eyebrow">Языки и рынок</p>
           <h1>Сравните языки и выберите стек под свою цель</h1>
           <p class="lead">
-            На этой странице собраны зарплатные ориентиры по языкам и стеку, включая Rust.
-            Кликайте по строкам таблицы и смотрите подробные треки.
+            Сравните направления по задачам, спросу и уровню дохода,
+            откройте нужный трек и поймите, с чего стартовать именно вам.
           </p>
           <p class="muted">
-            Если нужна помощь с выбором, подберём стек по вашему бэкграунду и карьерному плану.
+            Если сомневаетесь в выборе, напишите ментору: поможем определить трек и дадим бесплатные материалы в Telegram-боте.
           </p>
           <div class="hero-actions">
-            <a class="btn btn-primary" data-link="mentor" href="#">Собрать план под мой стек</a>
-            <a class="btn btn-ghost" href="index.html#services">Выбрать услугу</a>
+            <a class="btn btn-primary" data-link="mentor" href="#">Написать ментору</a>
+            <a class="btn btn-ghost" data-link="bot" data-bot-route="materials" data-bot-source="directions-materials" href="#">Забрать бесплатные материалы</a>
           </div>
         </div>
 
         <aside class="card hero-panel" data-reveal>
-          <h2>Как читать таблицу</h2>
+          <h2>Как пользоваться подборкой</h2>
           <ul class="check-list">
-            <li>Сначала смотрите уровень дохода и активность рынка.</li>
-            <li>Кликайте по языку: если есть страница, откроется детальный трек.</li>
-            <li>Если страницы нет, язык всё равно доступен для обучения.</li>
+            <li>Сначала смотрите задачи и перспективу по рынку.</li>
+            <li>Нажимайте на язык: если есть страница, откроется подробный трек.</li>
+            <li>Вступление в сообщество и бесплатные материалы доступны через Telegram-бот.</li>
           </ul>
         </aside>
       </div>
@@ -69,19 +70,19 @@
           <article class="card artifact-card card-variant" data-reveal>
             <h3>С нуля до оффера</h3>
             <p>Для старта в IT с нуля: от базы до первых офферов.</p>
-            <p class="service-inline-price">от 30 000 ₽ + постоплата от результата</p>
+            <p class="service-inline-price">30 000 ₽ + 150% или 60 000 ₽ + 100% от оффера</p>
             <a class="btn btn-link" href="zero-offer.html">Открыть раздел</a>
           </article>
           <article class="card artifact-card card-variant-alt" data-reveal>
-            <h3>Подготовка к собеседованиям</h3>
-            <p>Mock-интервью, техника ответов и уверенность на реальных этапах.</p>
-            <p class="service-inline-price">от 5 900 ₽</p>
+            <h3>После курсов</h3>
+            <p>Для тех, кто закончил онлайн-курсы и хочет выйти на первую работу.</p>
+            <p class="service-inline-price">30 000 ₽ + 150% или 60 000 ₽ + 100% от оффера</p>
             <a class="btn btn-link" href="interview-prep.html">Открыть раздел</a>
           </article>
           <article class="card artifact-card card-variant-alt" data-reveal>
-            <h3>Рост грейда и зарплаты</h3>
-            <p>Для опытных специалистов: рост уровня, ответственности и дохода.</p>
-            <p class="service-inline-price">50 000 ₽ + 75% от прироста оффера</p>
+            <h3>Увеличение зарплаты</h3>
+            <p>Для тех, кто уже работает и хочет закрыть пробелы в знаниях и вырасти по доходу.</p>
+            <p class="service-inline-price">30 000 ₽ + 150% или 60 000 ₽ + 100% от оффера</p>
             <a class="btn btn-link" href="grade-salary.html">Открыть раздел</a>
           </article>
           <article class="card artifact-card card-variant" data-reveal>
@@ -98,8 +99,8 @@
       <div class="container">
         <div class="section-head" data-reveal>
           <p class="eyebrow">Интерактивный график</p>
-          <h2>Зарплатные ориентиры по языкам и стеку</h2>
-          <p class="muted">Сортируйте по уровню зарплаты и переходите к подробным трекам одним кликом.</p>
+          <h2>Ориентиры по доходу в популярных языках</h2>
+          <p class="muted">Сортируйте по уровню дохода и переходите к подробным трекам одним кликом.</p>
         </div>
 
         <article class="card chart-card" data-reveal>
@@ -108,7 +109,7 @@
             <button class="chip-btn" type="button" data-chart-sort="asc">От меньшей</button>
           </div>
           <div id="salary-chart" class="salary-chart" aria-live="polite"></div>
-          <p id="salary-chart-detail" class="chart-detail muted">Нажмите на строку, чтобы открыть трек или получить персональные рекомендации.</p>
+          <p id="salary-chart-detail" class="chart-detail muted">Нажмите на язык, чтобы открыть трек или забрать персональные материалы в боте.</p>
           <p id="salary-chart-source" class="muted chart-source"></p>
         </article>
       </div>
@@ -141,7 +142,7 @@
           </article>
           <article class="card artifact-card" data-reveal>
             <h3>Шаг 3: проверка на практике</h3>
-            <p>Делаем тестовый план на 2–3 недели и смотрим, как идёт прогресс в реальных задачах.</p>
+            <p>Берём тестовый ритм на 2–3 недели и смотрим, как идёт прогресс в реальных задачах.</p>
           </article>
         </div>
       </div>
@@ -165,7 +166,7 @@
   <footer class="site-footer">
     <div class="container footer-inner">
       <p>© <span id="year"></span> ИП Олег Леонов</p>
-      <p class="footer-tax">ИП Олег Леонов • ИНН: <span class="footer-tax-placeholder">[добавьте ваш ИНН]</span></p>
+      <p class="footer-tax">ИП Олег Леонов • ИНН: <span class="footer-tax-placeholder">290125717910</span></p>
       <a class="footer-offer-link" href="offer.html">Публичная оферта</a>
     </div>
   </footer>

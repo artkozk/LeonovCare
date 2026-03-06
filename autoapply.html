@@ -1,10 +1,11 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Автоотклики — IT Mentorship Lab</title>
   <meta name="description" content="Сервис автооткликов: настройка, запуск и поддержка воронки откликов. Разовые пакеты и подписки.">
+  <link rel="canonical" href="https://leonovcare.ru/autoapply.html">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body data-page="autoapply">
@@ -41,10 +42,10 @@
           </p>
           <p class="muted">
             Базовая цена 7 ₽ за отклик, первые 50 откликов бесплатно при объёме до 200.
-            Подходит и для самостоятельного использования, и в связке с менторством.
+            В боте можно заполнить параметры и сразу запустить автоотклики.
           </p>
           <div class="hero-actions">
-            <a class="btn btn-primary" data-link="bot" data-bot-route="auto" data-bot-source="auto-hero" href="#">Подключить автоотклики</a>
+            <a class="btn btn-primary" data-link="bot" data-bot-route="auto" data-bot-source="auto-hero" href="#">Запустить автоотклики в боте</a>
             <a class="btn btn-ghost" data-link="channel" href="#">Вступить в сообщество</a>
           </div>
         </div>
@@ -137,7 +138,7 @@
         <article class="card autoapply-calculator" data-reveal>
           <div class="autoapply-calculator-head">
             <h3>Калькулятор автооткликов</h3>
-            <p class="muted">Выберите нужное количество откликов и сразу передайте выбор в Telegram-бота.</p>
+            <p class="muted">Выберите количество откликов и перейдите в Telegram-бот: параметры подтянутся в запуск.</p>
           </div>
           <div class="autoapply-slider-meta">
             <p><strong>Вы выбрали:</strong> <span id="autoapply-slider-value">120 откликов</span></p>
@@ -161,7 +162,7 @@
             <span>Хочу обсудить оплату в несколько платежей</span>
           </label>
           <div class="hero-actions autoapply-calculator-actions">
-            <a class="btn btn-primary" id="autoapply-slider-btn" href="#">Передать выбор в Telegram-бота</a>
+            <a class="btn btn-primary" id="autoapply-slider-btn" data-link="bot" data-bot-route="auto" data-bot-source="autoapply-slider-btn" href="https://t.me/Leonov_Care_bot">Запустить через Telegram-бот</a>
             <a class="btn btn-ghost" data-link="mentor" href="#">Обсудить стратегию с ментором</a>
           </div>
         </article>
@@ -287,11 +288,11 @@
       <div class="container cta-wrap" data-reveal>
         <div>
           <p class="eyebrow">Запуск сервиса</p>
-          <h2>Напишите в Telegram — обсудим формат автооткликов под ваш поиск</h2>
-          <p class="muted">Сначала фиксируем цель и объём, потом выбираем пакет или подписку.</p>
+          <h2>Запустите автоотклики через Telegram и масштабируйте поиск без рутины</h2>
+          <p class="muted">Выбираете цель, подтверждаете параметры в боте и запускаете поток откликов.</p>
         </div>
         <div class="cta-actions">
-          <a class="btn btn-primary btn-lg" data-link="bot" data-bot-route="auto" data-bot-source="auto-cta" href="#">Получить автоотклики</a>
+          <a class="btn btn-primary btn-lg" data-link="bot" data-bot-route="auto" data-bot-source="auto-cta" href="#">Запустить в боте</a>
           <a class="btn btn-ghost btn-lg" data-link="channel" href="#">Вступить в сообщество</a>
         </div>
       </div>
@@ -301,7 +302,7 @@
   <footer class="site-footer">
     <div class="container footer-inner">
       <p>© <span id="year"></span> ИП Олег Леонов</p>
-      <p class="footer-tax">ИП Олег Леонов • ИНН: <span class="footer-tax-placeholder">[добавьте ваш ИНН]</span></p>
+      <p class="footer-tax">ИП Олег Леонов • ИНН: <span class="footer-tax-placeholder">290125717910</span></p>
       <a class="footer-offer-link" href="offer.html">Публичная оферта</a>
     </div>
   </footer>
