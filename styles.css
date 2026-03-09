@@ -829,6 +829,41 @@ body.is-scrolled .site-header {
   padding: 16px;
 }
 
+.review-api-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 220px;
+}
+
+.review-api-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.review-api-author {
+  margin: 0;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.review-api-author a {
+  color: inherit;
+}
+
+.review-api-text {
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 1.55;
+  white-space: normal;
+}
+
+.reviews-api-status {
+  margin-top: 14px;
+}
+
 .reviews-dots {
   display: flex;
   justify-content: center;
@@ -928,6 +963,13 @@ body.is-scrolled .site-header {
 
 .pricing-price .price-new {
   color: var(--accent);
+}
+
+.pricing-price .price-alt {
+  flex-basis: 100%;
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: var(--support);
 }
 
 .pricing-list {

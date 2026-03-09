@@ -380,6 +380,112 @@
     }
   };
 
+  const renderReviewsFromApi = async () => {
+    const grid = document.getElementById("reviews-api-grid");
+    const status = document.getElementById("reviews-api-status");
+    if (!grid) {
+      return;
+    }
+
+    const setStatus = (text) => {
+      if (status) {
+        status.textContent = text;
+      }
+    };
+
+    const reviewsConfig = config.reviews || {};
+    const apiBaseUrl = String(reviewsConfig.apiBaseUrl || "").trim().replace(/\/+$/, "");
+    const telegramId = String(reviewsConfig.telegramId || "").trim();
+    const perPageRaw = Number.parseInt(reviewsConfig.perPage, 10);
+    const perPage = Number.isFinite(perPageRaw) && perPageRaw >= 0 ? perPageRaw : 0;
+
+    if (!apiBaseUrl || !telegramId) {
+      grid.innerHTML = "";
+      setStatus("Отзывы будут отображаться после подключения API (нужен telegramId ментора в config.js).");
+      return;
+    }
+
+    const toReview = (item, index) => {
+      const source = (item && typeof item === "object" && item.review && typeof item.review === "object")
+        ? item.review
+        : item;
+      if (!source || typeof source !== "object") {
+        return null;
+      }
+
+      const author = (source.author && typeof source.author === "object")
+        ? source.author
+        : ((item && item.author && typeof item.author === "object") ? item.author : {});
+
+      const username = String(author.username || source.username || "").trim();
+      const message = String(source.message || source.text || "").trim();
+      const id = source.id || item.id || `r${index + 1}`;
+
+      if (!message) {
+        return null;
+      }
+
+      return { id, username, message };
+    };
+
+    try {
+      setStatus("Загружаем отзывы…");
+      const url = new URL(`${apiBaseUrl}/integrations/mentors/reviews/${encodeURIComponent(telegramId)}`);
+      url.searchParams.set("page", "1");
+      url.searchParams.set("per_page", String(perPage));
+
+      const response = await fetch(url.toString(), {
+        headers: {
+          Accept: "application/json"
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`reviews_api_status_${response.status}`);
+      }
+
+      const payload = await response.json();
+      const result = (payload && typeof payload === "object" && payload.result && typeof payload.result === "object")
+        ? payload.result
+        : payload;
+
+      const rawItems = Array.isArray(result?.items)
+        ? result.items
+        : (Array.isArray(result?.reviews) ? result.reviews : []);
+      const items = rawItems
+        .map((item, index) => toReview(item, index))
+        .filter(Boolean);
+
+      if (!items.length) {
+        grid.innerHTML = "";
+        setStatus("Пока нет опубликованных отзывов.");
+        return;
+      }
+
+      grid.innerHTML = items
+        .map((item) => {
+          const authorHtml = item.username
+            ? `<a href="https://t.me/${encodeURIComponent(item.username)}" target="_blank" rel="noopener noreferrer">@${escapeHtml(item.username)}</a>`
+            : "Анонимный отзыв";
+          const messageHtml = escapeHtml(item.message).replace(/\n/g, "<br>");
+          return `
+            <article class="card review-api-card" data-reveal>
+              <div class="review-api-head">
+                <p class="review-api-author">${authorHtml}</p>
+              </div>
+              <p class="review-api-text">${messageHtml}</p>
+            </article>
+          `;
+        })
+        .join("");
+
+      setStatus(`Показано отзывов: ${items.length}.`);
+    } catch (error) {
+      grid.innerHTML = "";
+      setStatus("Не удалось загрузить отзывы из API. Проверьте telegramId и доступность API.");
+    }
+  };
+
   const renderServicePillars = () => {
     const grid = document.getElementById("service-pillars-grid");
     const services = Array.isArray(config.servicePillars) ? config.servicePillars : [];
@@ -426,9 +532,14 @@
         const installments = (serviceData.note || "").toLowerCase().includes("платеж");
         const planKey = compactToken(plan.planKey || plan.key || plan.slug || plan.title || `p${index + 1}`, 8) || `p${index + 1}`;
         const priceValue = plan.price || "По запросу";
-        const priceHtml = plan.oldPrice
+        const altPriceValue = plan.altPrice || "";
+        const mainPriceHtml = plan.oldPrice
           ? `<span class="price-old">${plan.oldPrice}</span><span class="price-new">${priceValue}</span>`
-          : priceValue;
+          : `<span class="price-new">${priceValue}</span>`;
+        const altPriceHtml = altPriceValue
+          ? `<span class="price-alt">${altPriceValue}</span>`
+          : "";
+        const priceHtml = `${mainPriceHtml}${altPriceHtml}`;
         return `
           <article class="card pricing-card ${plan.featured ? "is-featured" : ""}" data-reveal>
             <span class="pricing-badge">${plan.badge || "Тариф"}</span>
@@ -623,7 +734,7 @@
       chartRoot.querySelectorAll("[data-chart-item]").forEach((button) => {
         button.addEventListener("click", () => {
           const trackSlug = button.getAttribute("data-track");
-          const name = button.getAttribute("data-name") || "Язык";
+          const name = button.getAttribute("data-name") || "Направление";
           const value = Number(button.getAttribute("data-value"));
 
           if (trackSlug && trackMap.has(trackSlug)) {
@@ -636,7 +747,7 @@
           }
 
           if (detailNode) {
-            detailNode.textContent = `${name}: ориентир ${formatMoney(value)}. По этому языку можно открыть roadmap и материалы в Telegram-боте.`;
+            detailNode.textContent = `${name}: ориентир ${formatMoney(value)}. По этому направлению можно открыть roadmap и материалы в Telegram-боте.`;
           }
         });
       });
@@ -1173,6 +1284,7 @@
   renderTrackCards();
   renderTrackPage();
   renderSalaryChart();
+  void renderReviewsFromApi();
 
   applyLinks();
   setupTariffCartLinks();
