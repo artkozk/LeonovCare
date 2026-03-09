@@ -291,9 +291,19 @@
       <div class="container">
         <div class="section-head" data-reveal>
           <p class="eyebrow">Отзывы</p>
-          <h2>Отзывы учеников из API</h2>
+          <h2>Отзывы учеников</h2>
         </div>
-        <div id="reviews-api-grid" class="cards-grid cards-3" data-reveal></div>
+        <div class="reviews-carousel" data-reviews-carousel data-reveal>
+          <button class="review-nav-btn" type="button" data-reviews-prev aria-label="Предыдущие отзывы">
+            <span aria-hidden="true">←</span>
+          </button>
+          <div class="reviews-viewport">
+            <div id="reviews-api-track" class="reviews-track"></div>
+          </div>
+          <button class="review-nav-btn" type="button" data-reviews-next aria-label="Следующие отзывы">
+            <span aria-hidden="true">→</span>
+          </button>
+        </div>
         <p id="reviews-api-status" class="muted reviews-api-status" data-reveal>Загружаем отзывы…</p>
       </div>
     </section>

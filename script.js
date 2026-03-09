@@ -381,9 +381,9 @@
   };
 
   const renderReviewsFromApi = async () => {
-    const grid = document.getElementById("reviews-api-grid");
+    const track = document.getElementById("reviews-api-track");
     const status = document.getElementById("reviews-api-status");
-    if (!grid) {
+    if (!track) {
       return;
     }
 
@@ -398,10 +398,12 @@
     const telegramId = String(reviewsConfig.telegramId || "").trim();
     const perPageRaw = Number.parseInt(reviewsConfig.perPage, 10);
     const perPage = Number.isFinite(perPageRaw) && perPageRaw >= 0 ? perPageRaw : 0;
+    const previewCharsRaw = Number.parseInt(reviewsConfig.previewChars, 10);
+    const previewChars = Number.isFinite(previewCharsRaw) && previewCharsRaw >= 80 ? previewCharsRaw : 220;
 
     if (!apiBaseUrl || !telegramId) {
-      grid.innerHTML = "";
-      setStatus("Отзывы будут отображаться после подключения API (нужен telegramId ментора в config.js).");
+      track.innerHTML = "";
+      setStatus("Отзывы скоро появятся.");
       return;
     }
 
@@ -420,12 +422,30 @@
       const username = String(author.username || source.username || "").trim();
       const message = String(source.message || source.text || "").trim();
       const id = source.id || item.id || `r${index + 1}`;
+      const createdAt = String(source.created_at || source.createdAt || item.created_at || "").trim();
 
       if (!message) {
         return null;
       }
 
-      return { id, username, message };
+      return { id, username, message, createdAt };
+    };
+
+    const makePreview = (text, limit) => {
+      if (text.length <= limit) {
+        return {
+          shortText: text,
+          trimmed: false
+        };
+      }
+
+      const candidate = text.slice(0, limit + 1);
+      const lastSpace = candidate.lastIndexOf(" ");
+      const cutIndex = lastSpace > Math.floor(limit * 0.6) ? lastSpace : limit;
+      return {
+        shortText: text.slice(0, cutIndex).trimEnd(),
+        trimmed: true
+      };
     };
 
     try {
@@ -457,32 +477,58 @@
         .filter(Boolean);
 
       if (!items.length) {
-        grid.innerHTML = "";
+        track.innerHTML = "";
         setStatus("Пока нет опубликованных отзывов.");
         return;
       }
 
-      grid.innerHTML = items
+      track.innerHTML = items
         .map((item) => {
           const authorHtml = item.username
             ? `<a href="https://t.me/${encodeURIComponent(item.username)}" target="_blank" rel="noopener noreferrer">@${escapeHtml(item.username)}</a>`
             : "Анонимный отзыв";
           const messageHtml = escapeHtml(item.message).replace(/\n/g, "<br>");
+          const preview = makePreview(item.message, previewChars);
+          const previewHtml = preview.trimmed
+            ? `${escapeHtml(preview.shortText).replace(/\n/g, "<br>")}…`
+            : messageHtml;
+          let dateText = "";
+          if (item.createdAt) {
+            const parsedDate = new Date(item.createdAt);
+            if (!Number.isNaN(parsedDate.getTime())) {
+              dateText = new Intl.DateTimeFormat("ru-RU", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric"
+              }).format(parsedDate);
+            }
+          }
+          const dateHtml = dateText ? `<span class="review-api-date">${dateText}</span>` : "";
+          const expandButtonHtml = preview.trimmed
+            ? '<button class="review-expand-btn" type="button" data-review-open>Читать полностью</button>'
+            : "";
           return `
-            <article class="card review-api-card" data-reveal>
+            <article class="card review-card review-api-card">
               <div class="review-api-head">
                 <p class="review-api-author">${authorHtml}</p>
+                ${dateHtml}
               </div>
-              <p class="review-api-text">${messageHtml}</p>
+              <div class="review-api-body">
+                <p class="review-api-text review-api-text-short">${previewHtml}</p>
+                <p class="review-api-text review-api-text-full" hidden>${messageHtml}</p>
+                ${expandButtonHtml}
+              </div>
             </article>
           `;
         })
         .join("");
 
+      setupReviewExpander();
+      setupReviewsCarousel();
       setStatus(`Показано отзывов: ${items.length}.`);
     } catch (error) {
-      grid.innerHTML = "";
-      setStatus("Не удалось загрузить отзывы из API. Проверьте telegramId и доступность API.");
+      track.innerHTML = "";
+      setStatus("Временно не удалось загрузить отзывы. Попробуйте позже.");
     }
   };
 
@@ -904,8 +950,8 @@
 
       if (freeNode) {
         freeNode.textContent = calc.freeClicks > 0
-          ? `Из них ${calc.freeClicks} откликов бесплатны.`
-          : "Бесплатные отклики уже использованы, действует тариф по объёму.";
+          ? `Из них ${calc.freeClicks} откликов бесплатны (акция действует один раз на аккаунт).`
+          : "Для объема от 200 откликов действует тариф по объёму без бесплатного старта.";
       }
 
       if (noteNode) {
@@ -1245,6 +1291,92 @@
       viewport.addEventListener("scroll", update, { passive: true });
       window.addEventListener("resize", update);
       update();
+    });
+  };
+
+  const setupReviewExpander = () => {
+    const buttons = document.querySelectorAll("[data-review-open]");
+    if (!buttons.length) {
+      return;
+    }
+
+    let modal = document.getElementById("review-modal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = "review-modal";
+      modal.className = "review-modal";
+      modal.setAttribute("aria-hidden", "true");
+      modal.innerHTML = `
+        <div class="review-modal-inner" role="dialog" aria-modal="true" aria-labelledby="review-modal-author">
+          <button class="review-modal-close" type="button" data-review-modal-close aria-label="Закрыть">×</button>
+          <div class="review-modal-head">
+            <p id="review-modal-author" class="review-modal-author" data-review-modal-author></p>
+            <p class="review-modal-date" data-review-modal-date></p>
+          </div>
+          <div class="review-modal-text" data-review-modal-text></div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    const modalAuthor = modal.querySelector("[data-review-modal-author]");
+    const modalDate = modal.querySelector("[data-review-modal-date]");
+    const modalText = modal.querySelector("[data-review-modal-text]");
+    const closeButton = modal.querySelector("[data-review-modal-close]");
+    if (!modalAuthor || !modalDate || !modalText || !closeButton) {
+      return;
+    }
+
+    const closeModal = () => {
+      modal.classList.remove("is-open");
+      modal.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("modal-open");
+    };
+
+    const openModal = (card) => {
+      const authorNode = card.querySelector(".review-api-author");
+      const dateNode = card.querySelector(".review-api-date");
+      const fullTextNode = card.querySelector(".review-api-text-full");
+      if (!fullTextNode) {
+        return;
+      }
+
+      modalAuthor.innerHTML = authorNode ? authorNode.innerHTML : "Анонимный отзыв";
+      modalDate.textContent = dateNode ? dateNode.textContent || "" : "";
+      modalText.innerHTML = fullTextNode.innerHTML;
+
+      modal.classList.add("is-open");
+      modal.setAttribute("aria-hidden", "false");
+      document.body.classList.add("modal-open");
+    };
+
+    if (modal.dataset.bound !== "true") {
+      modal.dataset.bound = "true";
+      closeButton.addEventListener("click", closeModal);
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal) {
+          closeModal();
+        }
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && modal.classList.contains("is-open")) {
+          closeModal();
+        }
+      });
+    }
+
+    buttons.forEach((button) => {
+      if (button.dataset.bound === "true") {
+        return;
+      }
+      button.dataset.bound = "true";
+      button.addEventListener("click", () => {
+        const card = button.closest(".review-api-card");
+        if (!card) {
+          return;
+        }
+        openModal(card);
+      });
     });
   };
 
