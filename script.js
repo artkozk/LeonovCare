@@ -57,6 +57,7 @@
   const serviceTitleMap = {
     "zero-offer": "С нуля до оффера",
     "interview-prep": "После курсов до оффера",
+    "interview-helper": "Interview Helper",
     "grade-salary": "Увеличение зарплаты",
     "autoapply": "Автоотклики"
   };
@@ -64,6 +65,7 @@
   const routeByService = {
     "zero-offer": "enroll",
     "interview-prep": "enroll",
+    "interview-helper": "enroll",
     "grade-salary": "enroll",
     "autoapply": "auto"
   };
@@ -302,7 +304,7 @@
     const botNote = document.querySelector("[data-bot-note]");
     if (botNote) {
       botNote.textContent = (config.botUrl && config.botUrl.trim())
-        ? "Бот активен: внутри бесплатные материалы, roadmap, автоотклики, вступление на обучение и доступ в сообщество."
+        ? "Бот активен: внутри roadmap по 22 направлениям, Interview Helper, автоотклики, вступление на обучение и бесплатная лицензия JetBrains."
         : "Бот не указан: кнопка ведет в Telegram к ментору с предзаполненной заявкой.";
     }
   };
@@ -761,14 +763,10 @@
       chartRoot.innerHTML = items
         .map((item) => {
           const width = Math.round((item.value / max) * 100);
-          const focusBadge = item.focus
-            ? `<span class="chart-badge">Фокус программы</span>`
-            : "";
           return `
             <button class="chart-row" type="button" data-chart-item data-track="${item.track || ""}" data-name="${item.name}" data-value="${item.value}">
               <span class="chart-lang-wrap">
                 <span class="chart-lang">${item.name}</span>
-                ${focusBadge}
               </span>
               <span class="chart-track"><span class="chart-fill" style="width: ${width}%;"></span></span>
               <span class="chart-value">${formatMoney(item.value)}</span>
@@ -1000,6 +998,7 @@
     const servicePages = new Set([
       "zero-offer",
       "interview-prep",
+      "interview-helper",
       "grade-salary",
       "autoapply"
     ]);

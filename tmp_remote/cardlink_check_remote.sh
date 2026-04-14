@@ -1,0 +1,3 @@
+cd /opt/mentor-bot
+. .venv/bin/activate
+python -c "from pathlib import Path; from scripts.preprod_audit import _load_env_file; from app.config import load_config; from app.services.cardlink_client import CardlinkClient; _load_env_file(Path('/opt/mentor-bot/.env')); cfg=load_config(); c=CardlinkClient(shop_id=cfg.CARDLINK_SHOP_ID,bearer_token=cfg.CARDLINK_BEARER_TOKEN,return_url=cfg.CARDLINK_RETURN_URL,timeout_sec=cfg.CARDLINK_TIMEOUT_SEC,api_base_url=cfg.CARDLINK_API_BASE_URL); r=c.create_payment(amount_rub=500, description='preprod-check', metadata={'kind':'preprod'}); print('enabled=', c.enabled); print('id=', bool(str(r.get('id') or '').strip())); print('url=', bool(str(r.get('confirmation_url') or '').strip())); print('status=', str(r.get('status') or ''))"

@@ -1,0 +1,16 @@
+[Unit]
+Description=OkiDoki Registration Test Bot
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/okidoki-registration-test-bot
+EnvironmentFile=/opt/okidoki-registration-test-bot/.env
+ExecStart=/opt/okidoki-registration-test-bot/.venv/bin/python /opt/okidoki-registration-test-bot/run.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+
