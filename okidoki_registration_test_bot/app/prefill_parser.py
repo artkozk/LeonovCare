@@ -370,11 +370,14 @@ def validate_contract(
     payload_username = _normalize_username(
         _pick_text(payload, "username", "telegram", "tg_username", "telegram_username")
     )
+    template_name_hint = _pick_text(payload, "name", "template_name", "templateName", "contract_name")
 
     if has_required_system_fields and (has_known_system_fields or has_known_payload_fields):
         return ContractValidationResult(True, "ok", template_id, template_name, entity_names)
     if payload_username and (has_known_system_fields or has_known_payload_fields):
         return ContractValidationResult(True, "ok_by_payload", template_id, template_name, entity_names)
+    if has_known_payload_fields and template_name_hint:
+        return ContractValidationResult(True, "ok_by_payload_fields", template_id, template_name, entity_names)
     if not has_required_system_fields and not payload_username:
         return ContractValidationResult(False, "missing_required_system_fields", template_id, template_name, entity_names)
     return ContractValidationResult(False, "unknown_template", template_id, template_name, entity_names)

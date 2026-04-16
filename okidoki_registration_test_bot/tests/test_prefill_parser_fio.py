@@ -87,3 +87,16 @@ def test_validate_contract_accepts_punctuated_entity_names() -> None:
     result = validate_contract(payload, known_templates={})
     assert result.is_valid is True
     assert result.reason in {"ok", "ok_by_payload"}
+
+
+def test_validate_contract_accepts_payload_fields_without_username() -> None:
+    payload = {
+        "contract": {
+            "name": "Шаблон обучение 1 от 16.04.2026",
+            "direction": "Python",
+            "prepay": 30000,
+        }
+    }
+    result = validate_contract(payload, known_templates={})
+    assert result.is_valid is True
+    assert result.reason == "ok_by_payload_fields"
