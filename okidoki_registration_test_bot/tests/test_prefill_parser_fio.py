@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from app.prefill_parser import extract_prefill
+from app.prefill_parser import extract_prefill, validate_contract
 
 
 def test_extract_fio_from_root_field() -> None:
@@ -52,3 +52,38 @@ def test_does_not_take_template_name_as_fio() -> None:
     }
     prefill = extract_prefill(payload, "https://desktop.doki.online/contract/abc123")
     assert prefill.get("fio") is None
+
+
+def test_extract_prepay_and_tariff_from_entities_with_colon() -> None:
+    payload = {
+        "contract": {
+            "entities": [
+                {"keyword": "Телеграм клиента:", "value": "@alex_lovser"},
+                {"keyword": "Область:", "value": "Python"},
+                {"keyword": "Предоплата:", "value": "30000"},
+                {"keyword": "Количество месяцев постоплаты:", "value": "3"},
+            ]
+        }
+    }
+    prefill = extract_prefill(payload, "https://desktop.doki.online/contract/abc123")
+    assert prefill.get("paid_amount") == 30000
+    assert prefill.get("postpay_months") == 3
+    assert prefill.get("tariff") == "pre_post"
+
+
+def test_validate_contract_accepts_punctuated_entity_names() -> None:
+    payload = {
+        "result": {
+            "data": {
+                "contract": {
+                    "entities": [
+                        {"keyword": "Телеграм клиента:", "value": "@alex_lovser"},
+                        {"keyword": "Область.", "value": "Python"},
+                    ]
+                }
+            }
+        }
+    }
+    result = validate_contract(payload, known_templates={})
+    assert result.is_valid is True
+    assert result.reason in {"ok", "ok_by_payload"}

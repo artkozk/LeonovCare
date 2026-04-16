@@ -28,6 +28,15 @@ KNOWN_ENTITY_NAMES = {
 }
 
 
+def _normalize_entity_name(raw: str | None) -> str:
+    txt = str(raw or "").strip().lower().replace("ё", "е")
+    if not txt:
+        return ""
+    txt = txt.replace("_", " ")
+    txt = re.sub(r"[^\w\s]", " ", txt, flags=re.UNICODE)
+    return " ".join(txt.split())
+
+
 def _layers(payload: dict[str, Any] | None) -> list[dict[str, Any]]:
     if not isinstance(payload, dict):
         return []
@@ -72,7 +81,7 @@ def collect_entity_names(payload: dict[str, Any] | None) -> list[str]:
     seen: set[str] = set()
     for item in _entity_items(payload):
         name = str(item.get("keyword") or item.get("name") or "").strip()
-        norm = name.lower()
+        norm = _normalize_entity_name(name)
         if not norm or norm in seen:
             continue
         seen.add(norm)
@@ -92,11 +101,13 @@ def _pick_text(payload: dict[str, Any] | None, *keys: str) -> str:
 
 
 def _pick_entity(payload: dict[str, Any] | None, *names: str) -> str:
-    wanted = {str(name or "").strip().lower() for name in names if str(name or "").strip()}
+    wanted = {_normalize_entity_name(str(name or "")) for name in names if _normalize_entity_name(str(name or ""))}
     if not wanted:
         return ""
     for item in _entity_items(payload):
-        key_name = str(item.get("keyword") or item.get("name") or item.get("id") or "").strip().lower()
+        key_name = _normalize_entity_name(
+            str(item.get("keyword") or item.get("name") or item.get("id") or "")
+        )
         if key_name not in wanted:
             continue
         raw = item.get("value")
@@ -307,7 +318,9 @@ def validate_contract(
     template_id = _pick_text(payload, "template_id", "templateId", "id")
     template_name = _pick_text(payload, "template_name", "templateName", "name")
     entity_names = collect_entity_names(payload)
-    entity_norm = {name.lower() for name in entity_names}
+    entity_norm = {_normalize_entity_name(name) for name in entity_names}
+    required_entity_names = {_normalize_entity_name(name) for name in REQUIRED_SYSTEM_ENTITY_NAMES}
+    known_entity_names = {_normalize_entity_name(name) for name in KNOWN_ENTITY_NAMES}
 
     template_ok = False
     if template_id and isinstance(known_templates, dict):
@@ -320,17 +333,49 @@ def validate_contract(
         if low.startswith("шаблон обучение") or low == "договор возмездного оказания услуг":
             template_ok = True
 
-    has_required_system_fields = REQUIRED_SYSTEM_ENTITY_NAMES.issubset(entity_norm)
-    has_known_system_fields = bool(entity_norm.intersection(KNOWN_ENTITY_NAMES))
+    has_required_system_fields = required_entity_names.issubset(entity_norm)
+    has_known_system_fields = bool(entity_norm.intersection(known_entity_names))
+    known_payload_hints = (
+        _pick_text(
+            payload,
+            "direction",
+            "specialization",
+            "area",
+            "prepay",
+            "prepayment",
+            "prepay_amount",
+            "paid_amount",
+            "tariff",
+            "tariff_type",
+            "post_total_percent",
+            "postpay_total_percent",
+            "total_percent",
+            "post_monthly_percent",
+            "postpay_monthly_percent",
+            "monthly_percent",
+            "postpay_months",
+        )
+        or _pick_entity(
+            payload,
+            "Область",
+            "Направление",
+            "Специализация",
+            "Предоплата",
+            "Сумма предоплаты",
+            "Количество месяцев постоплаты",
+            "Постоплата месяцев",
+        )
+    )
+    has_known_payload_fields = bool(str(known_payload_hints or "").strip())
     payload_username = _normalize_username(
         _pick_text(payload, "username", "telegram", "tg_username", "telegram_username")
     )
 
-    if has_required_system_fields and has_known_system_fields:
+    if has_required_system_fields and (has_known_system_fields or has_known_payload_fields):
         return ContractValidationResult(True, "ok", template_id, template_name, entity_names)
-    if payload_username and has_known_system_fields:
+    if payload_username and (has_known_system_fields or has_known_payload_fields):
         return ContractValidationResult(True, "ok_by_payload", template_id, template_name, entity_names)
-    if not has_required_system_fields:
+    if not has_required_system_fields and not payload_username:
         return ContractValidationResult(False, "missing_required_system_fields", template_id, template_name, entity_names)
     return ContractValidationResult(False, "unknown_template", template_id, template_name, entity_names)
 
