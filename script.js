@@ -52,6 +52,7 @@
 
   const mentorLink = toTelegramUrl(config.mentorUrl, config.prefilledMessage);
   const channelLink = config.channelUrl || "#";
+  const youtubeLink = config.youtubeUrl || "#";
   const cartStorageKey = "lc_tariff_cart_v1";
 
   const serviceTitleMap = {
@@ -265,7 +266,9 @@
   const applyLinks = () => {
     const linkMap = {
       mentor: mentorLink,
-      channel: channelLink
+      channel: channelLink,
+      bot: botBaseUrl,
+      youtube: youtubeLink
     };
 
     document.querySelectorAll("[data-link]").forEach((node) => {
@@ -304,7 +307,7 @@
     const botNote = document.querySelector("[data-bot-note]");
     if (botNote) {
       botNote.textContent = (config.botUrl && config.botUrl.trim())
-        ? "Бот активен: внутри roadmap по 22 направлениям, Interview Helper, автоотклики, вступление на обучение и бесплатная лицензия JetBrains."
+        ? "Бот активен: внутри roadmap по 22 направлениям, Interview Helper, подготовка к интервью, автоотклики, вступление на обучение и бесплатная лицензия JetBrains."
         : "Бот не указан: кнопка ведет в Telegram к ментору с предзаполненной заявкой.";
     }
   };
@@ -346,7 +349,6 @@
 
   const renderAutoapplyPricing = () => {
     const ratesList = document.getElementById("autoapply-rates");
-    const packsList = document.getElementById("autoapply-packs");
     const subsList = document.getElementById("autoapply-subscriptions");
     const autoapply = config.autoapply || {};
 
@@ -354,18 +356,6 @@
       const rates = Array.isArray(autoapply.rateRules) ? autoapply.rateRules : [];
       ratesList.innerHTML = rates
         .map((item) => `<li>${item.range}: <strong>${item.perClick || "По запросу"}</strong></li>`)
-        .join("");
-    }
-
-    if (packsList) {
-      const packs = Array.isArray(autoapply.packs) ? autoapply.packs : [];
-      packsList.innerHTML = packs
-        .map((pack) => `
-          <li>
-            ${pack.name}: ${pack.oldPrice ? `<s>${pack.oldPrice}</s> ` : ""}<strong>${pack.price || "По запросу"}</strong>
-            ${pack.note ? `<br><span class="muted">${pack.note}</span>` : ""}
-          </li>
-        `)
         .join("");
     }
 
@@ -819,32 +809,6 @@
     render();
   };
 
-  const calcAutoapplyPrice = (rawClicks) => {
-    const clicks = Math.max(Number.parseInt(rawClicks, 10) || 0, 0);
-    let perClick = 7;
-    let freeClicks = 0;
-
-    if (clicks < 200) {
-      perClick = 7;
-      freeClicks = Math.min(clicks, 50);
-    } else if (clicks < 500) {
-      perClick = 6;
-    } else {
-      perClick = 5;
-    }
-
-    const paidClicks = Math.max(clicks - freeClicks, 0);
-    const total = paidClicks * perClick;
-
-    return {
-      clicks,
-      perClick,
-      freeClicks,
-      paidClicks,
-      total
-    };
-  };
-
   const setupTariffCartLinks = () => {
     const buttons = Array.from(document.querySelectorAll("[data-cart-add]"));
     if (!buttons.length) {
@@ -901,92 +865,6 @@
         setLink(button, state);
       });
     });
-  };
-
-  const setupAutoapplyCalculator = () => {
-    const slider = document.getElementById("autoapply-slider");
-    if (!(slider instanceof HTMLInputElement)) {
-      return;
-    }
-
-    const valueNode = document.getElementById("autoapply-slider-value");
-    const totalNode = document.getElementById("autoapply-slider-total");
-    const rateNode = document.getElementById("autoapply-slider-rate");
-    const noteNode = document.getElementById("autoapply-slider-note");
-    const freeNode = document.getElementById("autoapply-slider-free");
-    const checkoutButton = document.getElementById("autoapply-slider-btn");
-    const installmentsToggle = document.getElementById("autoapply-installments");
-
-    const setCheckoutLink = (state) => {
-      if (!(checkoutButton instanceof HTMLAnchorElement)) {
-        return;
-      }
-      checkoutButton.setAttribute("href", buildBotCheckoutLink(state));
-      checkoutButton.setAttribute("target", "_blank");
-      checkoutButton.setAttribute("rel", "noopener noreferrer");
-    };
-
-    const sync = () => {
-      const calc = calcAutoapplyPrice(slider.value);
-      const formattedClicks = new Intl.NumberFormat("ru-RU").format(calc.clicks);
-      const installments = Boolean(
-        installmentsToggle instanceof HTMLInputElement
-        && installmentsToggle.checked
-      );
-
-      if (valueNode) {
-        valueNode.textContent = `${formattedClicks} откликов`;
-      }
-
-      if (totalNode) {
-        totalNode.textContent = formatMoney(calc.total);
-      }
-
-      if (rateNode) {
-        rateNode.textContent = `${calc.perClick} ₽ / отклик`;
-      }
-
-      if (freeNode) {
-        freeNode.textContent = calc.freeClicks > 0
-          ? `Из них ${calc.freeClicks} откликов бесплатны (акция действует один раз на аккаунт).`
-          : "Для объема от 200 откликов действует тариф по объёму без бесплатного старта.";
-      }
-
-      if (noteNode) {
-        noteNode.textContent = calc.clicks < 200
-          ? "Пробный формат: можно начать с малого объёма и проверить конверсию."
-          : "Объём уже достаточный для стабильной воронки ответов от рынка.";
-      }
-
-      const state = {
-        ...readCartState(),
-        serviceSlug: "autoapply",
-        serviceTitle: serviceTitleMap["autoapply"],
-        planTitle: `Автоотклики: ${formattedClicks}`,
-        planKey: `auto${calc.clicks}`,
-        planPrice: formatMoney(calc.total),
-        sourceButton: "autoapply-slider",
-        autoapplyClicks: calc.clicks,
-        totalPrice: calc.total,
-        installments
-      };
-
-      writeCartState(state);
-      setCheckoutLink(state);
-    };
-
-    slider.addEventListener("input", sync);
-    slider.addEventListener("change", sync);
-
-    if (installmentsToggle instanceof HTMLInputElement) {
-      installmentsToggle.addEventListener("change", sync);
-    }
-
-    if (checkoutButton instanceof HTMLAnchorElement) {
-      checkoutButton.addEventListener("click", sync);
-    }
-
-    sync();
   };
 
   const setupPageActiveNav = () => {
@@ -1407,6 +1285,26 @@
     }
   };
 
+  const injectFooterContacts = () => {
+    const footerInner = document.querySelector(".footer-inner");
+    if (!footerInner || footerInner.querySelector(".footer-contacts")) {
+      return;
+    }
+
+    const contactsNode = document.createElement("div");
+    contactsNode.className = "footer-contacts";
+    contactsNode.innerHTML = `
+      <p class="footer-contacts-title">Контакты:</p>
+      <div class="footer-contacts-links">
+        <a data-link="mentor" href="#">@LeonovCare (ментор)</a>
+        <a data-link="bot" href="#">@Leonov_Care_bot (бот)</a>
+        <a data-link="channel" href="#">t.me/olegleonoff (канал)</a>
+        <a data-link="youtube" href="#">@leonov_care (YouTube)</a>
+      </div>
+    `;
+    footerInner.appendChild(contactsNode);
+  };
+
   renderPricing();
   renderPaymentModes();
   renderAutoapplyPricing();
@@ -1417,9 +1315,9 @@
   renderSalaryChart();
   void renderReviewsFromApi();
 
+  injectFooterContacts();
   applyLinks();
   setupTariffCartLinks();
-  setupAutoapplyCalculator();
   setupPageActiveNav();
   setupSmartHeader();
   setupMobileMenu();

@@ -1361,6 +1361,34 @@ body.is-scrolled .site-header {
   text-decoration: underline;
 }
 
+.footer-contacts {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.footer-contacts-title {
+  margin: 0;
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.footer-contacts-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+}
+
+.footer-contacts-links a {
+  color: var(--color-text-muted);
+  font-size: 0.94rem;
+}
+
+.footer-contacts-links a:hover {
+  color: var(--accent);
+}
+
 .footer-links {
   display: flex;
   gap: 10px;

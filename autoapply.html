@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Автоотклики — IT Mentorship Lab</title>
-  <meta name="description" content="Сервис автооткликов: настройка, запуск и поддержка воронки откликов. Разовые пакеты и подписки.">
+  <meta name="description" content="Сервис автооткликов: месячный тариф 500 ₽, до 200 откликов в день и пробный период 1 день.">
   <link rel="canonical" href="https://leonovcare.ru/autoapply.html">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -41,9 +41,9 @@
             автоотклики закрывают рутинную часть и помогают не терять темп.
           </p>
           <p class="muted">
-            Базовая цена 7 ₽ за отклик, первые 50 откликов бесплатно один раз на аккаунт
-            при объёме до 199 откликов.
-            В боте можно заполнить параметры и сразу запустить автоотклики.
+            Единый тариф: 500 ₽ в месяц за автоотклики (до 200 откликов в день).
+            Перед оплатой доступен пробный период 1 день: бесплатно открываем Interview Helper и автоотклики.
+            В боте можно сразу запустить тест и оценить конверсию.
           </p>
           <div class="hero-actions">
             <a class="btn btn-primary" data-link="bot" data-bot-route="auto" data-bot-source="auto-hero" href="#">Запустить автоотклики в боте</a>
@@ -122,51 +122,16 @@
           <p class="eyebrow">Тарифная логика</p>
           <h2>Прозрачные цены на отклики</h2>
         </div>
-        <div class="cards-grid cards-3">
+        <div class="cards-grid cards-2">
           <article class="card autoapply-tariffs" data-reveal>
-            <h3>Разовые отклики</h3>
+            <h3>Пробный период</h3>
             <ul class="pricing-list" id="autoapply-rates"></ul>
           </article>
           <article class="card autoapply-tariffs" data-reveal>
-            <h3>Пакеты (выгоднее)</h3>
-            <ul class="pricing-list" id="autoapply-packs"></ul>
-          </article>
-          <article class="card autoapply-tariffs" data-reveal>
-            <h3>Недельный тариф</h3>
+            <h3>Месячный тариф</h3>
             <ul class="pricing-list" id="autoapply-subscriptions"></ul>
           </article>
         </div>
-        <article class="card autoapply-calculator" data-reveal>
-          <div class="autoapply-calculator-head">
-            <h3>Калькулятор автооткликов</h3>
-            <p class="muted">Выберите количество откликов и перейдите в Telegram-бот: параметры подтянутся в запуск.</p>
-          </div>
-          <div class="autoapply-slider-meta">
-            <p><strong>Вы выбрали:</strong> <span id="autoapply-slider-value">120 откликов</span></p>
-            <p><strong>Тариф:</strong> <span id="autoapply-slider-rate">7 ₽ / отклик</span></p>
-            <p><strong>Итог:</strong> <span id="autoapply-slider-total">490 ₽</span></p>
-          </div>
-          <input
-            id="autoapply-slider"
-            class="autoapply-slider"
-            type="range"
-            min="50"
-            max="1500"
-            step="10"
-            value="120"
-            aria-label="Количество автооткликов"
-          >
-          <p id="autoapply-slider-free" class="muted autoapply-slider-note">Из них 50 откликов бесплатны (акция действует один раз на аккаунт).</p>
-          <p id="autoapply-slider-note" class="muted autoapply-slider-note">Пробный формат: можно начать с малого объёма и проверить конверсию.</p>
-          <label class="autoapply-installments">
-            <input id="autoapply-installments" type="checkbox">
-            <span>Хочу обсудить оплату в несколько платежей</span>
-          </label>
-          <div class="hero-actions autoapply-calculator-actions">
-            <a class="btn btn-primary" id="autoapply-slider-btn" data-link="bot" data-bot-route="auto" data-bot-source="autoapply-slider-btn" href="https://t.me/Leonov_Care_bot">Запустить через Telegram-бот</a>
-            <a class="btn btn-ghost" data-link="mentor" href="#">Обсудить стратегию с ментором</a>
-          </div>
-        </article>
         <p class="autoapply-disclaimer muted" data-reveal>
           Не обещаем оффер. Мы автоматизируем рутину поиска и работаем корректно,
           без заявлений про обход правил площадок.
@@ -194,11 +159,11 @@
           <article class="faq-item">
             <h3>
               <button id="a-faq-q2" class="faq-question" type="button" aria-expanded="false" aria-controls="a-faq-a2">
-                Что такое карьерная консультация и чем она отличается в тарифах на 7 и 14 дней?
+                Как сейчас устроен тариф на автоотклики?
               </button>
             </h3>
             <div id="a-faq-a2" class="faq-answer" role="region" aria-labelledby="a-faq-q2">
-              <p>На 7 дней обычно даём диагностику и письменные рекомендации. На 14 дней добавляется персональная сессия, более глубокая доработка резюме и детальный план.</p>
+              <p>Сейчас единый тариф: 500 ₽ в месяц за автоотклики до 200 откликов в день. Перед оплатой даём 1 день бесплатного пробного периода.</p>
             </div>
           </article>
           <article class="faq-item">
@@ -274,11 +239,11 @@
           <article class="faq-item">
             <h3>
               <button id="a-faq-q10" class="faq-question" type="button" aria-expanded="false" aria-controls="a-faq-a10">
-                Как работает бесплатный старт на 50 откликов?
+                Как работает бесплатный 1-дневный пробный период?
               </button>
             </h3>
             <div id="a-faq-a10" class="faq-answer" role="region" aria-labelledby="a-faq-q10">
-              <p>Для нового аккаунта первые 50 откликов в диапазоне до 199 откликов бесплатны один раз. После использования действует обычный тариф по объёму.</p>
+              <p>Пробный период открывает на 1 день доступ и к Interview Helper, и к автооткликам. После теста можно перейти на месячный тариф 500 ₽.</p>
             </div>
           </article>
         </div>
