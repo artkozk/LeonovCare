@@ -1,5 +1,6 @@
 const mentorUrl = "https://t.me/LeonovCare";
 const channelUrl = "https://t.me/olegleonoff";
+const groupUrl = "https://t.me/olegleonoff";
 const botUrl = "https://t.me/Leonov_Care_bot";
 const youtubeUrl = "https://www.youtube.com/@leonov_care";
 const prefilledMessage = "Привет! Хочу выбрать тариф и получить roadmap и материалы по обучению/поиску работы.";
@@ -237,15 +238,15 @@ const serviceTariffs = {
       {
         badge: "Разово",
         title: "Составление резюме",
-        subtitle: "Точечная упаковка резюме под целевые вакансии и этапы отбора.",
+        subtitle: "Точечная упаковка CV под целевые вакансии и ATS.",
         oldPrice: "",
         price: "10 000 ₽",
         cta: "Заказать резюме",
         linkType: "bot",
         features: [
-          "Разбор текущего резюме и целевой роли.",
-          "Перепаковка под ATS и первичный скрининг.",
-          "Финальная версия + рекомендации по адаптации."
+          "Разбор текущего резюме и профиля.",
+          "Переписывание структуры и акцентов под роль.",
+          "Финальная версия CV + рекомендации по откликам."
         ]
       }
     ]
@@ -302,15 +303,16 @@ const serviceTariffs = {
       {
         badge: "Разово",
         title: "Составление резюме",
-        subtitle: "Точечная упаковка резюме под переход на следующий грейд.",
+        subtitle: "Упаковка CV под next-step позицию и рост компенсации.",
+        oldPrice: "",
         price: "10 000 ₽",
         cta: "Заказать резюме",
         linkType: "bot",
         features: [
-          "Разбор текущего профиля и целевого уровня.",
-          "Пересборка резюме под senior/lead ожидания.",
-          "Подсветка достижений языком бизнес-результата.",
-          "Финальная версия + тактика адаптации под вакансии."
+          "Подготовка резюме под целевой грейд и задачи роли.",
+          "Переформулировка достижений на язык бизнеса и метрик.",
+          "Финальная структура под ATS и интервьюеров.",
+          "Список правок профиля и сопроводительных материалов."
         ]
       }
     ]
@@ -319,15 +321,14 @@ const serviceTariffs = {
 
 const autoapply = {
   rateRules: [
-    { range: "Пробный период", perClick: "1 день бесплатно: Interview Helper + автоотклики" }
+    { range: "Тариф", perClick: "500 ₽ / месяц: до 200 откликов в день" }
   ],
-  packs: [],
   subscriptions: [
     {
       name: "Месячный тариф: 200 откликов в день",
       oldPrice: "",
       price: "500 ₽ / месяц",
-      note: "До 200 откликов в день + 1 день бесплатного пробного периода."
+      note: "Пробный период 1 день: доступ к Interview Helper и автооткликам."
     }
   ]
 };
@@ -1402,19 +1403,20 @@ const visibleLanguageTracks = [
 ];
 
 const languageSalaryChart = {
-  title: "Ориентиры зарплат по направлениям разработки",
+  title: "Ориентиры зарплат по стекам разработки",
   unit: "₽/мес",
   sourceTitle: "Хабр Карьера, зарплаты разработчиков по языкам, 2 полугодие 2025",
   sourceUrl: "https://habr.com/ru/specials/994308/",
-  note: "По QA, аналитике, менеджменту и ML ориентир считаем отдельно под роль и уровень. График показывает ключевые направления разработки.",
+  note: "По QA, аналитике, менеджменту и ML ориентир считаем отдельно под роль и уровень. График показывает стековые направления разработки.",
   data: [
     { name: "Go / Golang", value: 320000, track: "golang" },
     { name: "Java", value: 270000, track: "java" },
-    { name: "DevOps / SRE", value: 260000, track: "devops" },
-    { name: "C# / .NET", value: 250000, track: "csharp-dotnet" },
+    { name: "DevOps / SRE", value: 255000, track: "devops" },
     { name: "Frontend (JS/TS)", value: 240000, track: "frontend" },
     { name: "Backend", value: 235000, track: "backend" },
     { name: "Python", value: 230000, track: "python" },
+    { name: "C# / .NET", value: 220000, track: "csharp-dotnet" },
+    { name: "Data Engineering", value: 215000, track: "data-engineering" },
     { name: "PHP", value: 205000, track: "php" }
   ]
 };
@@ -1429,6 +1431,7 @@ const reviews = {
 window.siteConfig = {
   mentorUrl,
   channelUrl,
+  groupUrl,
   botUrl,
   youtubeUrl,
   prefilledMessage,
@@ -1442,4 +1445,5 @@ window.siteConfig = {
   languageSalaryChart,
   reviews
 };
+
 
