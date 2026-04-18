@@ -571,6 +571,10 @@ body.is-scrolled .site-header {
   position: relative;
   overflow: hidden;
   background: linear-gradient(145deg, #ffffff 0%, #f6fbff 55%, #f7fff9 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
 }
 
 .service-card::before {
@@ -585,6 +589,12 @@ body.is-scrolled .site-header {
 
 .service-card .pricing-list {
   margin: 12px 0 18px;
+  flex: 1 1 auto;
+}
+
+.service-card .btn {
+  margin-top: auto;
+  align-self: flex-start;
 }
 
 .service-price {
