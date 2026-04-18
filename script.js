@@ -376,7 +376,6 @@
 
   const renderAutoapplyPricing = () => {
     const ratesList = document.getElementById("autoapply-rates");
-    const packsList = document.getElementById("autoapply-packs");
     const subsList = document.getElementById("autoapply-subscriptions");
     const autoapply = config.autoapply || {};
 
@@ -384,18 +383,6 @@
       const rates = Array.isArray(autoapply.rateRules) ? autoapply.rateRules : [];
       ratesList.innerHTML = rates
         .map((item) => `<li>${item.range}: <strong>${item.perClick || "По запросу"}</strong></li>`)
-        .join("");
-    }
-
-    if (packsList) {
-      const packs = Array.isArray(autoapply.packs) ? autoapply.packs : [];
-      packsList.innerHTML = packs
-        .map((pack) => `
-          <li>
-            ${pack.name}: ${pack.oldPrice ? `<s>${pack.oldPrice}</s> ` : ""}<strong>${pack.price || "По запросу"}</strong>
-            ${pack.note ? `<br><span class="muted">${pack.note}</span>` : ""}
-          </li>
-        `)
         .join("");
     }
 
