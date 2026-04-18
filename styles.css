@@ -890,11 +890,133 @@ body.is-scrolled .site-header {
   color: inherit;
 }
 
+.review-api-date {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.92rem;
+  white-space: nowrap;
+}
+
+.review-api-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+}
+
 .review-api-text {
   margin: 0;
   color: var(--color-text-muted);
   line-height: 1.55;
   white-space: normal;
+}
+
+.review-expand-btn {
+  align-self: flex-start;
+  margin-top: auto;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--accent);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.review-expand-btn:hover {
+  border-color: #c7d6ff;
+  background: var(--accent-soft);
+}
+
+.review-expand-btn:focus-visible {
+  outline: 2px solid rgba(31, 123, 214, 0.35);
+  outline-offset: 2px;
+}
+
+.review-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(10, 14, 22, 0.7);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.review-modal.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.review-modal-inner {
+  width: min(760px, calc(100vw - 32px));
+  max-height: min(84vh, 900px);
+  overflow: auto;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(15, 32, 67, 0.35);
+  padding: 22px 20px 18px;
+  position: relative;
+}
+
+.review-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 1.2rem;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.review-modal-close:hover {
+  background: var(--color-hover);
+}
+
+.review-modal-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-right: 44px;
+}
+
+.review-modal-author {
+  margin: 0;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.review-modal-date {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.review-modal-text {
+  color: var(--color-text);
+  line-height: 1.6;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.review-modal-text p {
+  margin: 0;
 }
 
 .reviews-api-status {
