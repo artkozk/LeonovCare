@@ -590,6 +590,7 @@ body.is-scrolled .site-header {
 .service-card .pricing-list {
   margin: 12px 0 18px;
   flex: 1 1 auto;
+  align-content: start;
 }
 
 .service-card .btn {
