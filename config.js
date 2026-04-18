@@ -1403,21 +1403,33 @@ const visibleLanguageTracks = [
 ];
 
 const languageSalaryChart = {
-  title: "Ориентиры зарплат по стекам разработки",
+  title: "Ориентиры зарплат по направлениям IT",
   unit: "₽/мес",
-  sourceTitle: "Хабр Карьера, зарплаты разработчиков по языкам, 2 полугодие 2025",
-  sourceUrl: "https://habr.com/ru/specials/994308/",
-  note: "По QA, аналитике, менеджменту и ML ориентир считаем отдельно под роль и уровень. График показывает стековые направления разработки.",
+  sourceTitle: "Хабр Карьера: зарплатный калькулятор и обзор 2 полугодия 2025",
+  sourceUrl: "https://career.habr.com/salaries",
+  note: "В графике объединены стековые и ролевые направления. Данные берём из калькулятора Хабр Карьеры; для части языков ориентир синхронизирован с обзором зарплат за 2 полугодие 2025.",
   data: [
     { name: "Go / Golang", value: 320000, track: "golang" },
+    { name: "Product Manager", value: 291666, track: "product-manager" },
+    { name: "SRE", value: 283333, track: "devops" },
     { name: "Java", value: 270000, track: "java" },
-    { name: "DevOps / SRE", value: 255000, track: "devops" },
-    { name: "Frontend (JS/TS)", value: 240000, track: "frontend" },
-    { name: "Backend", value: 235000, track: "backend" },
+    { name: "Backend", value: 259166, track: "backend" },
+    { name: "Data Engineering", value: 255000, track: "data-engineering" },
+    { name: "Data Science (ML)", value: 251666, track: "ml" },
+    { name: "DevOps", value: 249166, track: "devops" },
+    { name: "AQA (Automation)", value: 236940, track: "aqa" },
+    { name: "Product Analyst", value: 235000, track: "analytics" },
     { name: "Python", value: 230000, track: "python" },
+    { name: "Frontend (JS/TS)", value: 225000, track: "frontend" },
+    { name: "System Analyst", value: 225000, track: "system-analyst" },
     { name: "C# / .NET", value: 220000, track: "csharp-dotnet" },
-    { name: "Data Engineering", value: 215000, track: "data-engineering" },
-    { name: "PHP", value: 205000, track: "php" }
+    { name: "Security Engineer", value: 216000, track: "infosec" },
+    { name: "PHP", value: 205000, track: "php" },
+    { name: "QA (Manual + General)", value: 196793, track: "qa" },
+    { name: "Business Analyst", value: 178800, track: "business-analyst" },
+    { name: "Project Manager", value: 171666, track: "project-manager" },
+    { name: "Data Analyst", value: 170833, track: "analytics" },
+    { name: "Web Analyst", value: 169750, track: "analytics" }
   ]
 };
 

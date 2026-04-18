@@ -768,9 +768,6 @@
 
     const sourceNode = document.getElementById("salary-chart-source");
     const detailNode = document.getElementById("salary-chart-detail");
-    const sortButtons = Array.from(document.querySelectorAll("[data-chart-sort]"));
-
-    let sortMode = "desc";
 
     const trackMap = new Map(
       (config.languageTracks || []).map((track) => [track.slug, track])
@@ -778,11 +775,7 @@
 
     const getSorted = () => {
       const sorted = [...config.languageSalaryChart.data];
-      if (sortMode === "desc") {
-        sorted.sort((a, b) => b.value - a.value);
-      } else {
-        sorted.sort((a, b) => a.value - b.value);
-      }
+      sorted.sort((a, b) => b.value - a.value);
       return sorted;
     };
 
@@ -826,18 +819,7 @@
         });
       });
 
-      sortButtons.forEach((button) => {
-        button.classList.toggle("is-active", button.getAttribute("data-chart-sort") === sortMode);
-      });
     };
-
-    sortButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        const mode = button.getAttribute("data-chart-sort");
-        sortMode = mode === "asc" ? "asc" : "desc";
-        render();
-      });
-    });
 
     if (sourceNode) {
       const { sourceTitle, sourceUrl, note } = config.languageSalaryChart;

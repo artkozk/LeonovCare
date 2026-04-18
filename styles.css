@@ -1293,36 +1293,6 @@ body.is-scrolled .site-header {
   padding: 24px;
 }
 
-.chart-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.chip-btn {
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  color: var(--color-text-muted);
-  border-radius: 999px;
-  padding: 8px 12px;
-  font-size: 0.86rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
-}
-
-.chip-btn:hover {
-  border-color: var(--color-border-strong);
-  color: var(--color-text);
-}
-
-.chip-btn.is-active {
-  border-color: #c7d6ff;
-  color: var(--accent);
-  background: var(--accent-soft);
-}
-
 .salary-chart {
   display: grid;
   gap: 10px;
