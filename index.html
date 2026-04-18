@@ -3,212 +3,386 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Артемий Кожакин — Руководитель цифровых продуктов и автоматизации</title>
-  <meta name="description" content="Персональный сайт Артемия Кожакина: цифровые продукты, автоматизация процессов, модульные системы и реализация под результат.">
+  <title>IT Mentorship Lab — ИП Олег Леонов</title>
+  <meta name="description" content="Карьерное менторство в IT: roadmap по 22 направлениям, Interview Helper, подготовка к собеседованиям и рост дохода.">
   <link rel="canonical" href="https://leonovcare.ru/">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body data-page="portfolio">
+<body data-page="index">
   <header class="site-header" id="top">
-    <div class="container p-header-inner">
-      <a class="p-brand" href="#top" aria-label="Наверх">
-        <span class="p-brand-name">Артемий Кожакин</span>
-        <span class="p-brand-role">Цифровые продукты и автоматизация</span>
+    <div class="container header-inner">
+      <a class="brand" href="index.html" aria-label="На главную">
+        <span class="brand-main">LEONOV CARE</span>
+        <span class="brand-sub">IT Mentorship Lab</span>
       </a>
-
-      <button class="p-menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
         <span></span>
         <span></span>
         <span></span>
         <span class="sr-only">Открыть меню</span>
       </button>
-
-      <nav class="site-nav p-site-nav" id="site-nav" aria-label="Основная навигация">
-        <a href="#cases">Кейсы</a>
-        <a href="#solutions">Решения</a>
-        <a href="#workflow">Как работаю</a>
-        <a href="#about">Обо мне</a>
-        <a href="#contact">Контакт</a>
-        <a class="nav-cta p-nav-cta" href="#contact">Обсудить задачу</a>
+      <nav class="site-nav" id="site-nav" aria-label="Основная навигация">
+        <a data-page="index" href="index.html">Главная</a>
+        <a data-page="services" href="index.html#services">Услуги</a>
+        <a data-page="directions" href="directions.html">Направления и рынок</a>
+        <a class="nav-cta" data-link="mentor" href="#">Бесплатный разбор</a>
       </nav>
     </div>
   </header>
 
-  <main class="portfolio-main">
-    <section class="portfolio-section p-hero" id="hero">
-      <div class="container p-hero-grid">
-        <div class="p-hero-copy" data-reveal>
-          <p class="p-eyebrow">Руководитель цифровых продуктов и автоматизации</p>
-          <h1>Артемий Кожакин — помогаю превращать ручные процессы в понятные цифровые системы</h1>
-          <p class="p-lead">
-            Работаю там, где бизнес уже упирается в хаос, ручную рутину и разрозненные инструменты. Проектирую решение, собираю продукт и довожу его до рабочего результата.
+  <main>
+    <section class="section hero" data-section>
+      <div class="container hero-grid">
+        <div class="hero-copy" data-reveal>
+          <p class="eyebrow">Карьерное менторство в IT</p>
+          <h1>От первого шага в IT до оффера и роста дохода</h1>
+          <p class="lead">
+            Работаем в индивидуальном формате до уровня Middle/Middle+:
+            даем четкий roadmap, каждую неделю усиливаем теорию практикой и адаптируем темп под вас.
+            Если тема идет тяжело — углубляемся, если идет быстро — ускоряем маршрут до оффера.
           </p>
-          <p class="p-hero-strip">Грантовый кейс • Автоматизация ручной команды • Работа с менторскими продуктами • Руководство реализацией</p>
-          <div class="p-actions">
-            <a class="btn btn-primary p-btn-primary" href="#contact">Обсудить задачу</a>
-            <a class="btn btn-ghost p-btn-ghost" href="#cases">Смотреть кейсы</a>
+          <div class="hero-actions">
+            <a class="btn btn-primary" data-link="mentor" href="#">Бесплатный разбор резюме</a>
+            <a class="btn btn-ghost" data-link="channel" href="#">Канал с разборами</a>
+          </div>
+          <div class="info-strip">
+            <span>Roadmap по 22 направлениям</span>
+            <span>Практика каждую неделю</span>
+            <span>Mock-собеседования</span>
+            <span>Interview Helper</span>
+            <span>Поддержка до оффера</span>
           </div>
         </div>
-
-        <aside class="p-hero-panel" data-reveal>
-          <div class="p-panel-head">
-            <h2>Ключевые факты</h2>
-          </div>
-          <ul class="p-facts-list">
-            <li>Есть кейс с грантовой поддержкой</li>
-            <li>Есть кейс автоматизации ручного процесса</li>
-            <li>Работаю на стыке продукта, бизнеса и разработки</li>
-            <li>Собираю модульные решения: CRM, автоматизация, Telegram, обучающие системы</li>
+        <aside class="card hero-panel" data-reveal>
+          <h2>Как начать</h2>
+          <ul class="check-list">
+            <li>Коротко обсуждаем вашу цель и текущий уровень.</li>
+            <li>Подбираем формат и даём доступ к готовому roadmap.</li>
+            <li>Двигаемся по этапам с обратной связью и практикой.</li>
           </ul>
-          <div class="p-panel-footer">
-            <span>Роль: оператор изменений</span>
-            <span>Фокус: рабочая система, а не демо</span>
+          <div class="panel-actions">
+            <a class="btn btn-secondary" data-link="mentor" href="#">Написать ментору</a>
+            <a class="btn btn-link" data-link="bot" data-bot-route="home" data-bot-source="hero-panel-bot" href="#">Перейти в бота</a>
           </div>
+          <p class="panel-note" data-bot-note></p>
         </aside>
       </div>
     </section>
 
-    <section class="portfolio-section p-pulse" id="positioning">
-      <div class="container" data-reveal>
-        <h2>Подключаюсь там, где процесс уже перерос ручное управление</h2>
-        <p>
-          Когда команда растет быстрее внутренних процессов, появляются потери по лидам, срокам и качеству коммуникации. В этой точке собираю управляемый контур: роли, данные, сценарии действий и инструменты, которые работают как единая система.
-        </p>
+    <section class="section section-tone-blue" id="services" data-section>
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Услуги</p>
+          <h2>Выберите формат под вашу карьерную задачу</h2>
+          <p class="muted">Прозрачные тарифы: стоимость видна сразу в карточке услуги, а выбранный формат можно передать в Telegram с предзаполнением.</p>
+        </div>
+        <div id="service-pillars-grid" class="cards-grid cards-2"></div>
       </div>
     </section>
 
-    <section class="portfolio-section p-cases" id="cases">
+    <section class="section section-muted" id="free-now" data-section>
       <div class="container">
-        <div class="p-section-head" data-reveal>
-          <p class="p-eyebrow">Кейсы</p>
-          <h2>Кейсы, где продуктовый подход дал практический результат</h2>
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Бесплатно</p>
+          <h2>Что можно забрать уже сегодня</h2>
+          <p class="muted">Даже без оплаты можно начать учиться, протестировать рынок и выбрать рабочее направление до старта менторства.</p>
         </div>
+        <div class="cards-grid cards-2">
+          <article class="card artifact-card card-variant" data-reveal>
+            <h3>Telegram-бот: материалы и roadmap</h3>
+            <p>В боте: выбор направления, шаги roadmap и отслеживание прогресса по обучению.</p>
+          </article>
+          <article class="card artifact-card card-variant-alt" data-reveal>
+            <h3>Проверка направления на практике</h3>
+            <p>Поможем выбрать понятный трек под вашу цель и текущий уровень, без лишней путаницы.</p>
+          </article>
+          <article class="card artifact-card card-variant-alt" data-reveal>
+            <h3>Вопросы с собеседований</h3>
+            <p>Подборка реальных тем и вопросов, чтобы понимать требования рынка заранее.</p>
+          </article>
+          <article class="card artifact-card card-variant" data-reveal>
+            <h3>JetBrains и автоотклики</h3>
+            <p>В Telegram-боте можно забрать бесплатную лицензию на продукты JetBrains. Там же запуск автооткликов и вход в сообщество.</p>
+          </article>
+        </div>
+        <p class="muted" data-reveal>Бесплатные материалы, roadmap по 22 направлениям, лицензия JetBrains, запуск автооткликов и вступление в сообщество доступны через Telegram-бота.</p>
+        <div class="hero-actions" data-reveal>
+          <a class="btn btn-secondary" data-link="mentor" href="#">Написать ментору</a>
+          <a class="btn btn-primary" data-link="bot" data-bot-route="materials" data-bot-source="free-materials" href="#">Забрать бесплатные материалы</a>
+        </div>
+      </div>
+    </section>
 
-        <div class="p-cases-grid">
-          <article class="p-case-card p-case-card-lg" data-reveal>
-            <p class="p-case-index">Кейс 1</p>
-            <h3>Платформа для молодёжных проектов, получившая грантовую поддержку</h3>
-            <div class="p-case-map">
-              <div>
-                <span>До</span>
-                <p>Разрозненная подача инициатив и сложная координация участников.</p>
-              </div>
-              <div>
-                <span>После</span>
-                <p>Единый цифровой контур с маршрутами команд и прозрачной управляемостью проекта.</p>
-              </div>
+    <section class="section" id="bot-start" data-section>
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Старт через Telegram</p>
+          <h2>Как работает раздел материалов в боте</h2>
+          <p class="muted">За несколько минут вы выбираете направление и получаете пошаговый roadmap с отметкой прогресса.</p>
+        </div>
+        <div class="cards-grid cards-3">
+          <article class="card artifact-card card-variant" data-reveal>
+            <h3>1. Открываете материалы</h3>
+            <p>В стартовом меню бота выбираете раздел «Бесплатные материалы».</p>
+          </article>
+          <article class="card artifact-card card-variant-alt" data-reveal>
+            <h3>2. Подтверждаете доступ</h3>
+            <p>Бот проверяет подписку на группу с материалами и открывает направления.</p>
+          </article>
+          <article class="card artifact-card card-variant" data-reveal>
+            <h3>3. Идёте по roadmap</h3>
+            <p>Проходите шаги по выбранному треку, отмечаете done/undone и видите прогресс.</p>
+          </article>
+        </div>
+        <div class="hero-actions" data-reveal>
+          <a class="btn btn-primary" data-link="bot" data-bot-route="materials" data-bot-source="bot-start-roadmap" href="#">Открыть roadmap-бота</a>
+          <a class="btn btn-ghost" href="directions.html">Сравнить направления</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-tone-blue" id="new-directions" data-section>
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Все специальности</p>
+          <h2>Roadmap в Telegram-боте уже доступны по всем направлениям</h2>
+          <p class="muted">В разделе «Бесплатные материалы» вы выбираете специальность, проходите roadmap по блокам и шагам и отмечаете прогресс прямо в боте.</p>
+        </div>
+        <div class="cards-grid cards-2">
+          <article class="card artifact-card card-variant" data-reveal>
+            <h3>Разработка и инженерия</h3>
+            <ul class="pill-list">
+              <li>Android</li>
+              <li>Flutter</li>
+              <li>iOS</li>
+              <li>Go / Golang</li>
+              <li>Frontend</li>
+              <li>Python</li>
+              <li>Java</li>
+              <li>C# / .NET</li>
+              <li>Backend</li>
+              <li>PHP</li>
+              <li>DevOps / SRE</li>
+              <li>Data Engineer</li>
+            </ul>
+          </article>
+          <article class="card artifact-card card-variant-alt" data-reveal>
+            <h3>Тестирование, аналитика и менеджмент</h3>
+            <ul class="pill-list">
+              <li>QA / Тестирование</li>
+              <li>AQA / Автотестирование</li>
+              <li>Machine Learning / Data Science</li>
+              <li>Системный аналитик</li>
+              <li>Аналитик данных / Продуктовая аналитика</li>
+              <li>Бизнес-аналитик</li>
+              <li>Project Manager</li>
+              <li>Product Manager</li>
+              <li>Информационная безопасность</li>
+              <li>Валютные удаленки / Linkedin</li>
+            </ul>
+          </article>
+        </div>
+        <div class="hero-actions" data-reveal>
+          <a class="btn btn-primary" data-link="bot" data-bot-route="materials" data-bot-source="all-specialties-index" href="#">Открыть roadmap в боте</a>
+          <a class="btn btn-ghost" href="directions.html">Смотреть хаб направлений</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="process" data-section>
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Как работаем</p>
+          <h2>Простой маршрут к результату</h2>
+        </div>
+        <div class="cards-grid cards-2 roadmap-flow">
+          <article class="card process-card roadmap-step-card" data-reveal>
+            <span class="step">Шаг 1</span>
+            <h3>Диагностика</h3>
+            <p>Определяем стартовую точку, цели и приоритеты на ближайшие месяцы.</p>
+          </article>
+          <article class="card process-card roadmap-step-card" data-reveal>
+            <span class="step">Шаг 2</span>
+            <h3>Roadmap действий</h3>
+            <p>Идём по чёткому маршруту: навыки, проекты, интервью и стратегия поиска.</p>
+          </article>
+          <article class="card process-card roadmap-step-card" data-reveal>
+            <span class="step">Шаг 3</span>
+            <h3>Практика и фидбек</h3>
+            <p>Закрепляем навыки на задачах и быстро корректируем курс по результатам.</p>
+          </article>
+          <article class="card process-card roadmap-step-card" data-reveal>
+            <span class="step">Шаг 4</span>
+            <h3>Финальный рывок</h3>
+            <p>Выходим к офферу, а затем закрепляемся на испытательном сроке с поддержкой ментора.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" data-section>
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Что получите</p>
+          <h2>Почему клиенты доходят до оффера и роста дохода</h2>
+        </div>
+        <div class="cards-grid cards-3">
+          <article class="card artifact-card card-variant" data-reveal>
+            <h3>Маршрут без хаоса</h3>
+            <p>Понятно, что делать каждую неделю: навыки, проекты, отклики и интервью в единой системе.</p>
+          </article>
+          <article class="card artifact-card card-variant-alt" data-reveal>
+            <h3>Рост денег, а не только статуса</h3>
+            <p>Работаем над компенсацией в цифрах: оклад, бонусы, условия оффера и переговоры.</p>
+          </article>
+          <article class="card artifact-card card-variant" data-reveal>
+            <h3>Поддержка до закрепления</h3>
+            <p>Не бросаем после оффера: помогаем пройти испытательный срок и закрепить результат на новой роли.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-muted" id="faq-main" data-section>
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">FAQ</p>
+          <h2>Типичные вопросы перед стартом</h2>
+          <p class="muted">Собрали частые вопросы с рынка карьерного менторства и ответы по нашему формату.</p>
+        </div>
+        <div class="faq-list" data-reveal>
+          <article class="faq-item">
+            <h3>
+              <button id="m-faq-q1" class="faq-question" type="button" aria-expanded="true" aria-controls="m-faq-a1">
+                За сколько можно выйти на первый оффер?
+              </button>
+            </h3>
+            <div id="m-faq-a1" class="faq-answer" role="region" aria-labelledby="m-faq-q1">
+              <p>Зависит от вашей стартовой точки и темпа. Обычно первые ощутимые результаты видны через 2-3 месяца системной практики, путь до оффера часто занимает 4-9 месяцев.</p>
             </div>
           </article>
-
-          <article class="p-case-card" data-reveal>
-            <p class="p-case-index">Кейс 2</p>
-            <h3>Автоматизация первичных обращений вместо ручной команды</h3>
-            <p>
-              Переведён входящий поток в сценарную модель с приоритизацией лидов, триггерами и понятной логикой передачи в работу.
-            </p>
+          <article class="faq-item">
+            <h3>
+              <button id="m-faq-q2" class="faq-question" type="button" aria-expanded="false" aria-controls="m-faq-a2">
+                Можно ли стартовать без IT-образования?
+              </button>
+            </h3>
+            <div id="m-faq-a2" class="faq-answer" role="region" aria-labelledby="m-faq-q2">
+              <p>Да. Важнее регулярная практика и понятный roadmap. Официальные форматы: 60 000 ₽ + 100% от оффера или 30 000 ₽ + 150% от оффера.</p>
+            </div>
           </article>
-
-          <article class="p-case-card p-case-card-dark" data-reveal>
-            <p class="p-case-index">Кейс 3</p>
-            <h3>Модульная система для управления лидами, коммуникацией и обучающим блоком</h3>
-            <p>
-              Построен связанный набор модулей, где CRM, коммуникации и образовательный контур работают как одна операционная среда.
-            </p>
+          <article class="faq-item">
+            <h3>
+              <button id="m-faq-q3" class="faq-question" type="button" aria-expanded="false" aria-controls="m-faq-a3">
+                Что если я уже с опытом, мне не нужен путь с нуля?
+              </button>
+            </h3>
+            <div id="m-faq-a3" class="faq-answer" role="region" aria-labelledby="m-faq-q3">
+              <p>Для опытных есть отдельный трек по росту грейда и компенсации: фокус на skill-gap, сильные кейсы, интервью и переговоры по офферу.</p>
+            </div>
+          </article>
+          <article class="faq-item">
+            <h3>
+              <button id="m-faq-q4" class="faq-question" type="button" aria-expanded="false" aria-controls="m-faq-a4">
+                Можно совмещать обучение с работой или вузом?
+              </button>
+            </h3>
+            <div id="m-faq-a4" class="faq-answer" role="region" aria-labelledby="m-faq-q4">
+              <p>Да. Темп подбираем под реальный график. Ключевой ориентир - стабильные 6-10 часов практики в неделю и контроль прогресса каждую неделю.</p>
+            </div>
+          </article>
+          <article class="faq-item">
+            <h3>
+              <button id="m-faq-q5" class="faq-question" type="button" aria-expanded="false" aria-controls="m-faq-a5">
+                Есть ли поддержка после получения оффера?
+              </button>
+            </h3>
+            <div id="m-faq-a5" class="faq-answer" role="region" aria-labelledby="m-faq-q5">
+              <p>Да. Мы помогаем пройти испытательный срок: разобрать рабочие задачи, выстроить коммуникацию в команде и закрепиться на позиции.</p>
+            </div>
+          </article>
+          <article class="faq-item">
+            <h3>
+              <button id="m-faq-q6" class="faq-question" type="button" aria-expanded="false" aria-controls="m-faq-a6">
+                Что значит «повышение компенсации» простыми словами?
+              </button>
+            </h3>
+            <div id="m-faq-a6" class="faq-answer" role="region" aria-labelledby="m-faq-q6">
+              <p>Это рост вашего итогового дохода: оклад, бонусы, опционы, удалёнка и другие условия оффера. Мы работаем именно с этими цифрами, а не с абстрактным «повышением грейда».</p>
+            </div>
+          </article>
+          <article class="faq-item">
+            <h3>
+              <button id="m-faq-q7" class="faq-question" type="button" aria-expanded="false" aria-controls="m-faq-a7">
+                Можно ли разбить оплату на несколько платежей?
+              </button>
+            </h3>
+            <div id="m-faq-a7" class="faq-answer" role="region" aria-labelledby="m-faq-q7">
+              <p>Да, большинство форматов можно разделить на 2-4 платежа. График фиксируем до старта, чтобы нагрузка была комфортной.</p>
+            </div>
+          </article>
+          <article class="faq-item">
+            <h3>
+              <button id="m-faq-q8" class="faq-question" type="button" aria-expanded="false" aria-controls="m-faq-a8">
+                Что дает Telegram-бот с roadmap?
+              </button>
+            </h3>
+            <div id="m-faq-a8" class="faq-answer" role="region" aria-labelledby="m-faq-q8">
+              <p>Бот даёт бесплатный старт: roadmap по 22 направлениям, материалы, трекинг прогресса, доступ к бесплатной лицензии JetBrains, запуск автооткликов и кнопку «Вступить на обучение».</p>
+            </div>
           </article>
         </div>
       </div>
     </section>
 
-    <section class="portfolio-section p-solutions" id="solutions">
+    <section class="section section-tone-green" id="proof" data-section>
       <div class="container">
-        <div class="p-section-head" data-reveal>
-          <p class="p-eyebrow">Решения</p>
-          <h2>Что я собираю</h2>
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Отзывы</p>
+          <h2>Отзывы учеников</h2>
         </div>
-
-        <div class="p-solutions-grid">
-          <article class="p-solution-card p-solution-main" data-reveal>
-            <h3>Операционный каркас процесса</h3>
-            <p>Логика воронки, правила движения задач, точки контроля и прозрачные роли внутри команды.</p>
-          </article>
-          <article class="p-solution-card" data-reveal>
-            <h3>CRM и маршруты коммуникации</h3>
-            <p>Структура лидов, статусы, сценарии сообщений и контроль повторных касаний.</p>
-          </article>
-          <article class="p-solution-card" data-reveal>
-            <h3>Telegram и рабочие интерфейсы</h3>
-            <p>Клиентские и внутренние сценарии в Telegram для ускорения операций и сокращения ручной рутины.</p>
-          </article>
-          <article class="p-solution-card p-solution-accent" data-reveal>
-            <h3>Обучающие и менторские модули</h3>
-            <p>Системы сопровождения, чтобы команда не теряла качество на масштабе.</p>
-          </article>
+        <div class="reviews-carousel" data-reviews-carousel data-reveal>
+          <button class="review-nav-btn" type="button" data-reviews-prev aria-label="Предыдущие отзывы">
+            <span aria-hidden="true">←</span>
+          </button>
+          <div class="reviews-viewport">
+            <div id="reviews-api-track" class="reviews-track"></div>
+          </div>
+          <button class="review-nav-btn" type="button" data-reviews-next aria-label="Следующие отзывы">
+            <span aria-hidden="true">→</span>
+          </button>
         </div>
+        <p id="reviews-api-status" class="muted reviews-api-status" data-reveal>Загружаем отзывы…</p>
       </div>
     </section>
 
-    <section class="portfolio-section p-workflow" id="workflow">
-      <div class="container">
-        <div class="p-section-head" data-reveal>
-          <p class="p-eyebrow">Как работаю</p>
-          <h2>Не начинаю с кода. Начинаю с разбора задачи</h2>
-        </div>
-
-        <ol class="p-steps" data-reveal>
-          <li>
-            <h3>Разбор задачи</h3>
-            <p>Фиксируем узкое место процесса, ограничения и метрику, на которую влияет решение.</p>
-          </li>
-          <li>
-            <h3>Проектирование решения</h3>
-            <p>Собираем архитектуру модулей, роли участников и сценарии работы на практике.</p>
-          </li>
-          <li>
-            <h3>Реализация</h3>
-            <p>Запускаем приоритетные блоки без лишнего шума: только то, что дает управляемый результат.</p>
-          </li>
-          <li>
-            <h3>Внедрение и доработка</h3>
-            <p>Доводим систему по обратной связи команды, чтобы процесс держался не на людях, а на контуре.</p>
-          </li>
-        </ol>
-      </div>
-    </section>
-
-    <section class="portfolio-section p-about" id="about">
-      <div class="container p-about-grid" data-reveal>
+    <section class="section section-cta" data-section>
+      <div class="container cta-wrap" data-reveal>
         <div>
-          <p class="p-eyebrow">Обо мне</p>
-          <h2>Работаю на стыке цифровых продуктов, реализации и внутренних процессов</h2>
+          <p class="eyebrow">Старт</p>
+          <h2>Напишите в Telegram и получите доступ к roadmap и материалам</h2>
+          <p class="muted">Разберём текущую точку, предложим путь до оффера и согласуем удобный формат оплаты (в том числе по частям).</p>
         </div>
-        <p>
-          Беру ответственность за путь от постановки задачи до рабочего результата. Веду проекты как продуктовый оператор: синхронизирую бизнес-цели, техническую реализацию и ежедневную операционку команды.
-        </p>
-      </div>
-    </section>
-
-    <section class="portfolio-section p-contact" id="contact">
-      <div class="container p-contact-wrap" data-reveal>
-        <div>
-          <p class="p-eyebrow">Контакт</p>
-          <h2>Если процесс уже держится на ручной рутине — его пора переводить в систему</h2>
-          <p>Опишите задачу и контекст. Я предложу рабочую структуру и план внедрения без лишних действий.</p>
-        </div>
-        <div class="p-actions">
-          <a class="btn btn-primary p-btn-primary" href="https://t.me/LeonovCare" target="_blank" rel="noopener noreferrer">Обсудить задачу</a>
+        <div class="cta-actions">
+          <a class="btn btn-primary btn-lg" data-link="mentor" href="#">Написать ментору</a>
+          <a class="btn btn-ghost btn-lg" data-link="channel" href="#">Открыть канал</a>
         </div>
       </div>
     </section>
   </main>
 
-  <footer class="site-footer p-footer">
+  <footer class="site-footer">
     <div class="container footer-inner">
-      <p>© <span id="year"></span> Артемий Кожакин</p>
-      <p class="footer-tax">Персональный сайт цифровых продуктов и автоматизации</p>
-      <a class="footer-offer-link" href="#top">Наверх</a>
+      <p>© <span id="year"></span> ИП Олег Леонов</p>
+      <p class="footer-tax">ИП Олег Леонов • ИНН: <span class="footer-tax-placeholder">290125717910</span></p>
+      <a class="footer-offer-link" href="offer.html">Публичная оферта</a>
     </div>
   </footer>
 
-  <script src="portfolio.js" defer></script>
+  <script src="config.js"></script>
+  <script src="script.js" defer></script>
 </body>
 </html>
+
+
+
