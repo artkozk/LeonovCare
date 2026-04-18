@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import html
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -39,6 +40,12 @@ FIELD_PROMPTS = {
     "study_start_date": "Введи дату обучения в формате `ДД.ММ.ГГГГ`:",
     "paid_amount": "Введи сумму, которую уже заплатил (число в рублях):",
     "will_pay_amount": "Введи, сколько заплатит (сумма или текст):",
+}
+
+TARIFF_LABELS = {
+    "pre": "Только предоплата",
+    "post": "Только постоплата",
+    "pre_post": "Предоплата + постоплата",
 }
 
 
@@ -125,6 +132,97 @@ def _prefill_text(prefill: dict[str, Any]) -> str:
             continue
         label = FIELD_LABELS.get(key, key)
         lines.append(f"- {label}: {_display_value(key, prefill.get(key))}")
+    return "\n".join(lines)
+
+
+def _as_float(raw: Any) -> float | None:
+    if raw is None:
+        return None
+    if isinstance(raw, (int, float)) and not isinstance(raw, bool):
+        return float(raw)
+    text = str(raw).strip().replace(",", ".")
+    if not text:
+        return None
+    try:
+        return float(text)
+    except Exception:
+        return None
+
+
+def _format_money(raw: Any) -> str:
+    if raw is None:
+        return "—"
+    if isinstance(raw, (int, float)) and not isinstance(raw, bool):
+        amount = int(raw)
+    else:
+        amount = _parse_amount(str(raw))
+    if amount is None:
+        return html.escape(str(raw))
+    return f"{amount:,}".replace(",", " ") + " ₽"
+
+
+def _post_rule_text(prefill: dict[str, Any], tariff_code: str) -> str:
+    if tariff_code not in {"post", "pre_post"}:
+        return "—"
+    total = _as_float(prefill.get("post_total_percent")) or 0.0
+    monthly = _as_float(prefill.get("post_monthly_percent"))
+    months = _as_float(prefill.get("postpay_months"))
+
+    if total > 0 and monthly is not None and monthly > 0:
+        return f"{total:.1f}% всего; {monthly:.1f}% в месяц"
+    if total > 0 and months is not None and months > 0:
+        calc_monthly = total / months
+        return f"{total:.1f}% всего; {calc_monthly:.1f}% в месяц"
+    if total > 0:
+        return f"{total:.1f}% всего; кастом"
+
+    will_pay = str(prefill.get("will_pay_amount") or "").strip()
+    return will_pay or "—"
+
+
+def _student_card_preview_text(prefill: dict[str, Any]) -> str:
+    fio = html.escape(str(prefill.get("fio") or "—"))
+    direction = html.escape(str(prefill.get("direction") or "—"))
+    stage = html.escape(str(prefill.get("stage") or "С нуля"))
+
+    username_norm = _normalize_username(prefill.get("username"))
+    username = f"@{username_norm}" if username_norm else "—"
+
+    lead_source = html.escape(str(prefill.get("lead_source") or "—"))
+    tariff_code = _normalize_tariff(prefill.get("tariff"))
+    tariff_title = TARIFF_LABELS.get(tariff_code, str(prefill.get("tariff") or "—"))
+    tariff_percent = _as_float(prefill.get("post_total_percent"))
+    if tariff_code in {"post", "pre_post"} and tariff_percent is not None and tariff_percent > 0:
+        tariff_title = f"{tariff_title} ({tariff_percent:.1f}%)"
+
+    prepay = _format_money(prefill.get("paid_amount"))
+    post_rule = html.escape(_post_rule_text(prefill, tariff_code))
+    if tariff_code in {"post", "pre_post"}:
+        post_status = "ожидает оффер (первый платёж через 1 месяц после оффера)"
+    else:
+        post_status = "—"
+
+    join_date_raw = str(prefill.get("study_start_date") or "").strip()
+    join_date = _format_date(join_date_raw) or join_date_raw or "—"
+    contract_status = "ссылка добавлена" if str(prefill.get("contract_url") or "").strip() else "не заполнен"
+
+    lines = [
+        "<b>Ученик 1/1</b>",
+        "",
+        f"<b>{fio}</b>",
+        f"Направление: <b>{direction}</b>",
+        f"Этап: <b>{stage}</b>",
+        f"Username: {html.escape(username)}",
+        f"Источник лида: <b>{lead_source}</b>",
+        f"Тариф: <b>{html.escape(tariff_title)}</b>",
+        f"Предоплата: <b>{prepay}</b>",
+        f"Постоплата правило: {post_rule}",
+        f"Постоплата: <b>{html.escape(post_status)}</b>",
+        f"На обучении с: <b>{html.escape(join_date)}</b>",
+        "Собесы: <b>нет</b>",
+        f"Договор: <b>{contract_status}</b>",
+        "Автосообщения: <b>0/0</b> прочитано",
+    ]
     return "\n".join(lines)
 
 
@@ -336,7 +434,7 @@ def create_bot(cfg: Config) -> TeleBot:
         session.missing_fields = get_missing_fields(prefill)
         sessions[user_id] = session
         bot.send_message(message.chat.id, "Ссылка валидна, договор распознан как наш.")
-        bot.send_message(message.chat.id, _prefill_text(prefill))
+        bot.send_message(message.chat.id, _student_card_preview_text(prefill))
         if session.missing_fields:
             missing_labels = [FIELD_LABELS.get(field, field) for field in session.missing_fields]
             bot.send_message(
