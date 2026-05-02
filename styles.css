@@ -1313,6 +1313,25 @@ body.is-scrolled .site-header {
   letter-spacing: -0.01em;
 }
 
+.contract-card {
+  display: grid;
+  gap: 18px;
+}
+
+.contract-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.contract-frame {
+  width: 100%;
+  min-height: min(74vh, 860px);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-muted);
+}
+
 .lightbox {
   position: fixed;
   inset: 0;
