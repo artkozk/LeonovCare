@@ -416,9 +416,18 @@
     const apiBaseUrl = String(reviewsConfig.apiBaseUrl || "").trim().replace(/\/+$/, "");
     const telegramId = String(reviewsConfig.telegramId || "").trim();
     const perPageRaw = Number.parseInt(reviewsConfig.perPage, 10);
-    const perPage = Number.isFinite(perPageRaw) && perPageRaw >= 0 ? perPageRaw : 0;
+    const perPage = Number.isFinite(perPageRaw) && perPageRaw >= 1 ? perPageRaw : 20;
     const previewCharsRaw = Number.parseInt(reviewsConfig.previewChars, 10);
     const previewChars = Number.isFinite(previewCharsRaw) && previewCharsRaw >= 80 ? previewCharsRaw : 220;
+    const requestTimeoutRaw = Number.parseInt(reviewsConfig.requestTimeoutMs, 10);
+    const requestTimeoutMs = Number.isFinite(requestTimeoutRaw) && requestTimeoutRaw >= 3000
+      ? Math.min(requestTimeoutRaw, 60000)
+      : 12000;
+    const retryCountRaw = Number.parseInt(reviewsConfig.retryCount, 10);
+    const retryCount = Number.isFinite(retryCountRaw) && retryCountRaw >= 0
+      ? Math.min(retryCountRaw, 4)
+      : 2;
+    const reviewsCacheKey = `lc_reviews_cache_v2_${telegramId || "default"}`;
 
     if (!apiBaseUrl || !telegramId) {
       track.innerHTML = "";
@@ -467,40 +476,19 @@
       };
     };
 
-    try {
-      setStatus("Загружаем отзывы…");
-      const url = new URL(`${apiBaseUrl}/integrations/mentors/reviews/${encodeURIComponent(telegramId)}`);
-      url.searchParams.set("page", "1");
-      url.searchParams.set("per_page", String(perPage));
-
-      const response = await fetch(url.toString(), {
-        headers: {
-          Accept: "application/json"
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`reviews_api_status_${response.status}`);
-      }
-
-      const payload = await response.json();
+    const parsePayloadItems = (payload) => {
       const result = (payload && typeof payload === "object" && payload.result && typeof payload.result === "object")
         ? payload.result
         : payload;
-
       const rawItems = Array.isArray(result?.items)
         ? result.items
         : (Array.isArray(result?.reviews) ? result.reviews : []);
-      const items = rawItems
+      return rawItems
         .map((item, index) => toReview(item, index))
         .filter(Boolean);
+    };
 
-      if (!items.length) {
-        track.innerHTML = "";
-        setStatus("Пока нет опубликованных отзывов.");
-        return;
-      }
-
+    const renderItems = (items) => {
       track.innerHTML = items
         .map((item) => {
           const authorHtml = item.username
@@ -544,8 +532,124 @@
 
       setupReviewExpander();
       setupReviewsCarousel();
+    };
+
+    const readCachedItems = () => {
+      try {
+        const raw = window.localStorage.getItem(reviewsCacheKey);
+        if (!raw) {
+          return {
+            items: [],
+            savedAt: ""
+          };
+        }
+        const parsed = JSON.parse(raw);
+        const items = Array.isArray(parsed?.items)
+          ? parsed.items
+            .map((item, index) => toReview(item, index))
+            .filter(Boolean)
+          : [];
+        return {
+          items,
+          savedAt: String(parsed?.savedAt || "")
+        };
+      } catch (error) {
+        return {
+          items: [],
+          savedAt: ""
+        };
+      }
+    };
+
+    const writeCachedItems = (items) => {
+      try {
+        window.localStorage.setItem(reviewsCacheKey, JSON.stringify({
+          savedAt: new Date().toISOString(),
+          items
+        }));
+      } catch (error) {
+        // Ignore storage errors (private mode, disabled storage).
+      }
+    };
+
+    const fetchWithTimeout = async (url) => {
+      const controller = new AbortController();
+      const timerId = window.setTimeout(() => controller.abort(), requestTimeoutMs);
+      try {
+        return await fetch(url, {
+          headers: {
+            Accept: "application/json"
+          },
+          signal: controller.signal
+        });
+      } finally {
+        window.clearTimeout(timerId);
+      }
+    };
+
+    const delay = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
+
+    try {
+      setStatus("Загружаем отзывы…");
+      const url = new URL(`${apiBaseUrl}/integrations/mentors/reviews/${encodeURIComponent(telegramId)}`);
+      url.searchParams.set("page", "1");
+      url.searchParams.set("per_page", String(perPage));
+
+      let items = [];
+      let lastError = null;
+      for (let attempt = 0; attempt <= retryCount; attempt += 1) {
+        try {
+          const response = await fetchWithTimeout(url.toString());
+          if (!response.ok) {
+            throw new Error(`reviews_api_status_${response.status}`);
+          }
+
+          const payload = await response.json();
+          items = parsePayloadItems(payload);
+          lastError = null;
+          break;
+        } catch (error) {
+          lastError = error;
+          if (attempt < retryCount) {
+            setStatus(`Повторная попытка загрузки отзывов (${attempt + 2}/${retryCount + 1})…`);
+            await delay(500 * (attempt + 1));
+          }
+        }
+      }
+
+      if (lastError) {
+        throw lastError;
+      }
+
+      if (!items.length) {
+        track.innerHTML = "";
+        setStatus("Пока нет опубликованных отзывов.");
+        return;
+      }
+
+      renderItems(items);
+      writeCachedItems(items);
       setStatus(`Показано отзывов: ${items.length}.`);
     } catch (error) {
+      const cached = readCachedItems();
+      if (cached.items.length) {
+        renderItems(cached.items);
+        if (cached.savedAt) {
+          const savedDate = new Date(cached.savedAt);
+          if (!Number.isNaN(savedDate.getTime())) {
+            const formattedDate = new Intl.DateTimeFormat("ru-RU", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric"
+            }).format(savedDate);
+            setStatus(`Показаны сохраненные отзывы от ${formattedDate}. Обновление из API временно недоступно.`);
+            return;
+          }
+        }
+        setStatus("Показаны сохраненные отзывы. Обновление из API временно недоступно.");
+        return;
+      }
+
       track.innerHTML = "";
       setStatus("Временно не удалось загрузить отзывы. Попробуйте позже.");
     }

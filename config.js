@@ -1455,10 +1455,12 @@ const languageSalaryChart = {
 };
 
 const reviews = {
-  apiBaseUrl: "https://api.it-mentors.ru/v1",
+  apiBaseUrl: "https://api.2r.ru/v1",
   telegramId: "581827609",
-  perPage: 0,
-  previewChars: 220
+  perPage: 20,
+  previewChars: 220,
+  requestTimeoutMs: 12000,
+  retryCount: 2
 };
 
 window.siteConfig = {
