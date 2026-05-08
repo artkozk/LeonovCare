@@ -106,3 +106,43 @@
 
 `/main/LeonovCare/backups/20260422_231005`
 
+## Append-only update 2026-05-08 — release contour repair + phase-1 security hardening
+
+### Что выявлено
+
+1. На сервере `/main/LeonovCare/LeonovCare` `git submodule status` падал:
+   - `fatal: no submodule mapping found in .gitmodules for path 'AutoHh/parser_hh'`.
+2. Runtime-каталог `/opt/mentor-bot` не был git-репозиторием, значит `git pull`/rollback по SHA не детерминированы.
+3. SSH и сеть были в риск-профиле:
+   - `PermitRootLogin yes`;
+   - `PasswordAuthentication yes`;
+   - публично открыты `8080/8081/8510/8511`.
+
+### Что сделано в локальном Git-контуре
+
+1. Добавлен `.gitmodules` в superproject:
+   - `bot -> https://github.com/artkozk/LeonovBot.git`;
+   - `AutoHh/parser_hh -> https://github.com/artkozk/parser_hh.git`.
+2. В `bot` выполнена синхронизация кода с рабочим состоянием prod и закрыты регрессы тестов/QA-гейтов.
+
+### Что сделано на production (phase-1, без удаления старых практик)
+
+1. Создан `deploy` user и настроен key-only SSH вход.
+2. Применён SSH hardening:
+   - `PasswordAuthentication no`;
+   - `PermitRootLogin prohibit-password`;
+   - `sshd -t` и `systemctl reload ssh`.
+3. Проверка:
+   - `deploy` key login -> `OK`;
+   - `root` password login -> `Access denied` (ожидаемо).
+
+### Ограничение текущей фазы
+
+1. Для завершения полного infra-чеклиста (закрытие UFW портов, `systemctl enable mentor-bot`, перевод `/opt/mentor-bot` в git-managed checkout) нужно расширить sudo-scope deploy-user.
+2. Это зафиксировано явно, чтобы ревью и nightly rollout не считались завершёнными до закрытия этого блока.
+
+### Почему это зафиксировано
+
+1. Восстановление `.gitmodules` устраняет ошибку submodule-контуров и делает superproject воспроизводимым.
+2. SSH hardening закрывает критичный риск root/password входа и переводит доступ в контролируемый key-only режим.
+3. Явная фиксация незакрытого infra-хвоста предотвращает ложный сигнал "всё готово к прод-выкату".
