@@ -146,3 +146,12 @@
 1. Восстановление `.gitmodules` устраняет ошибку submodule-контуров и делает superproject воспроизводимым.
 2. SSH hardening закрывает критичный риск root/password входа и переводит доступ в контролируемый key-only режим.
 3. Явная фиксация незакрытого infra-хвоста предотвращает ложный сигнал "всё готово к прод-выкату".
+
+### Append-only deploy note (2026-05-08, after phase-1 rollout)
+
+1. Частичный runtime deploy выполнен через `deploy` user (key-only) для файлов `mentorbot`-ownership в `/opt/mentor-bot`.
+2. `mentor-bot` перезапущен и подтвержден `active`; smoke-check на сервере -> `OK modules=19 message_handlers=31 callback_handlers=326`.
+3. Не закрыты infra-пункты, требующие расширенного sudo:
+   - `systemctl enable mentor-bot`;
+   - закрытие UFW портов `8080/8081/8510/8511`;
+   - обновление root-owned файлов и полный git-managed runtime checkout.
