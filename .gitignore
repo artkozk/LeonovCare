@@ -1,0 +1,22 @@
+# Claude Code worktrees / sessions / agent state
+.claude/
+
+# Python bytecode (just in case anything Python lands here)
+__pycache__/
+*.pyc
+*.pyo
+
+# Local editor / OS noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Local environment files (never commit secrets)
+.env
+.env.local
+
+# Local-only helper scripts pulled from remote during diagnostics
+# (Use the documented backups/ tree for anything that must persist.)
+tmp_remote_*.sh
+tmp_remote_*.cmd
