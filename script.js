@@ -319,7 +319,7 @@
     }
 
     const links = [
-      { label: "Ментор", href: mentorLink, text: "@LeonovCare" },
+      { label: "Ментор", href: mentorLink, text: "@mr_winchester1" },
       { label: "Бот", href: botContactLink, text: "@Leonov_Care_bot" },
       { label: "Канал", href: channelLink, text: "t.me/olegleonoff" },
       { label: "Группа", href: groupLink, text: "t.me/olegleonoff" },
