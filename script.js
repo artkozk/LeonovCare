@@ -3,6 +3,7 @@
   if (!config) {
     return;
   }
+  const hidePricesCompletely = Boolean(config.hidePricesCompletely);
 
   const formatMoney = (value) => {
     const num = Number(value);
@@ -88,6 +89,28 @@
 
   const escapeAttr = (value) => escapeHtml(value).replace(/"/g, "&quot;");
 
+  const stripPriceMentions = (value) => {
+    let text = String(value || "");
+    text = text.replace(/\d[\d\s]*(?:[.,]\d+)?\s*₽(?:\s*\/\s*\d+\s*(?:дн(?:ей|я|ь)|месяц(?:а|ев)?|мес))?/gi, "формат по заявке");
+    text = text.replace(/\d+\s*%\s*от\s*(?:первой\s+)?(?:зарплаты|оффера)(?:\s*на\s*руки)?/gi, "индивидуальные условия");
+    text = text.replace(/\bстоим(?:ость|ости)\b/gi, "условия");
+    text = text.replace(/\bцена(?:ми|м|х|ы|у|а)?\b/gi, "условия");
+    text = text.replace(/\bтариф(?:ы|а|ов|у|ом)?\b/gi, "формат");
+    text = text.replace(/\bоплат(?:а|ы|у|е|ой)\b/gi, "условия");
+    text = text.replace(/\s{2,}/g, " ").trim();
+    return text;
+  };
+
+  const displayText = (value) => hidePricesCompletely ? stripPriceMentions(value) : String(value || "");
+
+  const displayPrice = (value, fallback = "По запросу") => {
+    if (hidePricesCompletely) {
+      return "";
+    }
+    const text = String(value || "").trim();
+    return text || fallback;
+  };
+
   const compactToken = (value, max = 14) => String(value || "")
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "")
@@ -137,9 +160,9 @@
       lines.push(`Источник кнопки: ${source}.`);
     }
     if (planTitle) {
-      lines.push(`Выбранный тариф: ${planTitle}.`);
+      lines.push(`Выбранный формат: ${planTitle}.`);
     }
-    if (planPrice) {
+    if (planPrice && !hidePricesCompletely) {
       lines.push(`Стоимость на сайте: ${planPrice}.`);
     }
     if (Number(clicks) > 0) {
@@ -149,7 +172,7 @@
       }
     }
     if (installments) {
-      lines.push("Хочу обсудить оплату в несколько платежей.");
+      lines.push("Хочу обсудить поэтапный запуск.");
     }
     lines.push("Подскажите следующий шаг.");
     return lines.join("\n");
@@ -193,16 +216,16 @@
 
   const buildCartMessage = (cart) => {
     const lines = [
-      "Привет! Хочу оформить тариф через сайт."
+      "Привет! Хочу оформить формат через сайт."
     ];
 
     if (cart.serviceTitle) {
       lines.push(`Направление: ${cart.serviceTitle}`);
     }
     if (cart.planTitle) {
-      lines.push(`Тариф: ${cart.planTitle}`);
+      lines.push(`Формат: ${cart.planTitle}`);
     }
-    if (cart.planPrice) {
+    if (cart.planPrice && !hidePricesCompletely) {
       lines.push(`Стоимость на сайте: ${cart.planPrice}`);
     }
     if (cart.sourceButton) {
@@ -215,7 +238,7 @@
       }
     }
     if (cart.installments) {
-      lines.push("Хочу разделить оплату на несколько платежей.");
+      lines.push("Хочу разделить запуск на этапы.");
     }
 
     lines.push("Пожалуйста, подтвердите детали и шаги старта.");
@@ -346,19 +369,20 @@
     }
 
     const items = config.mentorshipPackages.map((item) => {
-      const price = config.packagePrices[item.priceKey] || "По запросу";
+      const price = displayPrice(config.packagePrices[item.priceKey], "По запросу");
+      const priceHtml = price ? `<p class="pricing-price">${escapeHtml(price)}</p>` : "";
       const features = (item.features || [])
-        .map((feature) => `<li>${feature}</li>`)
+        .map((feature) => `<li>${escapeHtml(displayText(feature))}</li>`)
         .join("");
 
       return `
         <article class="card pricing-card ${item.featured ? "is-featured" : ""}" data-reveal>
-          <span class="pricing-badge">${item.badge || "Формат"}</span>
-          <h3>${item.title}</h3>
-          <p class="muted">${item.subtitle || ""}</p>
-          <p class="pricing-price">${price}</p>
+          <span class="pricing-badge">${escapeHtml(displayText(item.badge || "Формат"))}</span>
+          <h3>${escapeHtml(displayText(item.title))}</h3>
+          <p class="muted">${escapeHtml(displayText(item.subtitle || ""))}</p>
+          ${priceHtml}
           <ul class="pricing-list">${features}</ul>
-          <a class="btn ${item.linkType === "bot" ? "btn-secondary" : "btn-primary"}" data-link="${item.linkType || "mentor"}" href="#">${item.ctaLabel || "Выбрать формат"}</a>
+          <a class="btn ${item.linkType === "bot" ? "btn-secondary" : "btn-primary"}" data-link="${item.linkType || "mentor"}" href="#">${escapeHtml(displayText(item.ctaLabel || "Выбрать формат"))}</a>
         </article>
       `;
     });
@@ -371,7 +395,11 @@
     if (!list || !Array.isArray(config.paymentModes)) {
       return;
     }
-    list.innerHTML = config.paymentModes.map((item) => `<li>${item}</li>`).join("");
+    list.innerHTML = config.paymentModes
+      .map((item) => displayText(item))
+      .filter(Boolean)
+      .map((item) => `<li>${escapeHtml(item)}</li>`)
+      .join("");
   };
 
   const renderAutoapplyPricing = () => {
@@ -382,19 +410,33 @@
     if (ratesList) {
       const rates = Array.isArray(autoapply.rateRules) ? autoapply.rateRules : [];
       ratesList.innerHTML = rates
-        .map((item) => `<li>${item.range}: <strong>${item.perClick || "По запросу"}</strong></li>`)
+        .map((item) => {
+          if (hidePricesCompletely) {
+            return `<li>${escapeHtml(displayText(item.range || ""))}</li>`;
+          }
+          return `<li>${escapeHtml(displayText(item.range || ""))}: <strong>${escapeHtml(displayPrice(item.perClick || "По запросу"))}</strong></li>`;
+        })
         .join("");
     }
 
     if (subsList) {
       const subscriptions = Array.isArray(autoapply.subscriptions) ? autoapply.subscriptions : [];
       subsList.innerHTML = subscriptions
-        .map((subscription) => `
-          <li>
-            ${subscription.name}: ${subscription.oldPrice ? `<s>${subscription.oldPrice}</s> ` : ""}<strong>${subscription.price || "По запросу"}</strong>
-            ${subscription.note ? `<br><span class="muted">${subscription.note}</span>` : ""}
-          </li>
-        `)
+        .map((subscription) => {
+          const name = escapeHtml(displayText(subscription.name || ""));
+          const note = subscription.note ? `<br><span class="muted">${escapeHtml(displayText(subscription.note))}</span>` : "";
+          if (hidePricesCompletely) {
+            return `<li>${name}${note}</li>`;
+          }
+          const oldPrice = subscription.oldPrice ? `<s>${escapeHtml(displayPrice(subscription.oldPrice, ""))}</s> ` : "";
+          const price = escapeHtml(displayPrice(subscription.price || "По запросу"));
+          return `
+            <li>
+              ${name}: ${oldPrice}<strong>${price}</strong>
+              ${note}
+            </li>
+          `;
+        })
         .join("");
     }
   };
@@ -663,18 +705,23 @@
     }
 
     grid.innerHTML = services
-      .map((service) => `
-        <article class="card service-card" data-reveal>
-          <p class="eyebrow">${service.tag || service.slug}</p>
-          <h3>${service.title}</h3>
-          <p class="service-price">${service.priceFrom || "Цена по запросу"}</p>
-          <p class="muted">${service.summary}</p>
-          <ul class="pricing-list">
-            ${(service.bullets || []).map((bullet) => `<li>${bullet}</li>`).join("")}
-          </ul>
-          <a class="btn btn-primary" href="${service.page}">${service.cta || "Открыть раздел"}</a>
-        </article>
-      `)
+      .map((service) => {
+        const servicePrice = displayPrice(service.priceFrom, "Цена по запросу");
+        const priceHtml = servicePrice ? `<p class="service-price">${escapeHtml(servicePrice)}</p>` : "";
+        const bullets = (service.bullets || []).map((bullet) => `<li>${escapeHtml(displayText(bullet))}</li>`).join("");
+        return `
+          <article class="card service-card" data-reveal>
+            <p class="eyebrow">${escapeHtml(displayText(service.tag || service.slug))}</p>
+            <h3>${escapeHtml(displayText(service.title))}</h3>
+            ${priceHtml}
+            <p class="muted">${escapeHtml(displayText(service.summary))}</p>
+            <ul class="pricing-list">
+              ${bullets}
+            </ul>
+            <a class="btn btn-primary" href="${service.page}">${escapeHtml(displayText(service.cta || "Открыть раздел"))}</a>
+          </article>
+        `;
+      })
       .join("");
   };
 
@@ -692,31 +739,34 @@
 
     const note = document.getElementById("service-tariffs-note");
     if (note) {
-      note.textContent = serviceData.note || "";
+      note.textContent = displayText(serviceData.note || "");
     }
 
     root.innerHTML = serviceData.plans
       .map((plan, index) => {
         const serviceTitle = serviceTitleMap[page] || page;
-        const installments = (serviceData.note || "").toLowerCase().includes("платеж");
+        const installments = displayText(serviceData.note || "").toLowerCase().includes("платеж");
         const planKey = compactToken(plan.planKey || plan.key || plan.slug || plan.title || `p${index + 1}`, 8) || `p${index + 1}`;
-        const priceValue = plan.price || "По запросу";
-        const altPriceValue = plan.altPrice || "";
-        const mainPriceHtml = plan.oldPrice
-          ? `<span class="price-old">${plan.oldPrice}</span><span class="price-new">${priceValue}</span>`
-          : `<span class="price-new">${priceValue}</span>`;
+        const priceValue = displayPrice(plan.price || "По запросу");
+        const altPriceValue = hidePricesCompletely ? "" : displayPrice(plan.altPrice || "", "");
+        const mainPriceHtml = !hidePricesCompletely && priceValue
+          ? (plan.oldPrice
+            ? `<span class="price-old">${escapeHtml(displayPrice(plan.oldPrice, ""))}</span><span class="price-new">${escapeHtml(priceValue)}</span>`
+            : `<span class="price-new">${escapeHtml(priceValue)}</span>`)
+          : "";
         const altPriceHtml = altPriceValue
           ? `<span class="price-alt">${altPriceValue}</span>`
           : "";
         const priceHtml = `${mainPriceHtml}${altPriceHtml}`;
+        const priceBlockHtml = priceHtml ? `<p class="pricing-price">${priceHtml}</p>` : "";
         return `
           <article class="card pricing-card ${plan.featured ? "is-featured" : ""}" data-reveal>
-            <span class="pricing-badge">${plan.badge || "Тариф"}</span>
-            <h3>${plan.title}</h3>
-            <p class="muted">${plan.subtitle || ""}</p>
-            <p class="pricing-price">${priceHtml}</p>
+            <span class="pricing-badge">${escapeHtml(displayText(plan.badge || "Тариф"))}</span>
+            <h3>${escapeHtml(displayText(plan.title))}</h3>
+            <p class="muted">${escapeHtml(displayText(plan.subtitle || ""))}</p>
+            ${priceBlockHtml}
             <ul class="pricing-list">
-              ${(plan.features || []).map((item) => `<li>${item}</li>`).join("")}
+              ${(plan.features || []).map((item) => `<li>${escapeHtml(displayText(item))}</li>`).join("")}
             </ul>
             <a
               class="btn btn-primary"
@@ -724,13 +774,13 @@
               data-cart-add="true"
               data-cart-service="${escapeAttr(page)}"
               data-cart-service-title="${escapeAttr(serviceTitle)}"
-              data-cart-plan="${escapeAttr(plan.title || "")}"
+              data-cart-plan="${escapeAttr(displayText(plan.title || ""))}"
               data-cart-plan-key="${escapeAttr(planKey)}"
-              data-cart-price="${escapeAttr(priceValue)}"
-              data-cart-source="${escapeAttr(plan.cta || plan.title || "")}"
+              data-cart-price="${escapeAttr(hidePricesCompletely ? "" : priceValue)}"
+              data-cart-source="${escapeAttr(displayText(plan.cta || plan.title || ""))}"
               data-cart-installments="${installments ? "true" : "false"}"
               href="#"
-            >${plan.cta || "Оставить заявку"}</a>
+            >${escapeHtml(displayText(plan.cta || "Оставить заявку"))}</a>
           </article>
         `;
       })
@@ -1042,17 +1092,21 @@
       }
 
       if (totalNode) {
-        totalNode.textContent = formatMoney(calc.total);
+        totalNode.textContent = hidePricesCompletely
+          ? "Формат запуска обсуждается в чате."
+          : formatMoney(calc.total);
       }
 
       if (rateNode) {
-        rateNode.textContent = `${calc.perClick} ₽ / отклик`;
+        rateNode.textContent = hidePricesCompletely
+          ? "Сценарий запуска подбираем после заявки."
+          : `${calc.perClick} ₽ / отклик`;
       }
 
       if (freeNode) {
         freeNode.textContent = calc.freeClicks > 0
-          ? `Из них ${calc.freeClicks} откликов бесплатны (акция действует один раз на аккаунт).`
-          : "Для объема от 200 откликов действует тариф по объёму без бесплатного старта.";
+          ? `Из них ${calc.freeClicks} откликов доступны в пробном запуске (действует один раз на аккаунт).`
+          : "Для объема от 200 откликов действует расширенный режим без пробного старта.";
       }
 
       if (noteNode) {
@@ -1067,7 +1121,7 @@
         serviceTitle: serviceTitleMap["autoapply"],
         planTitle: `Автоотклики: ${formattedClicks}`,
         planKey: `auto${calc.clicks}`,
-        planPrice: formatMoney(calc.total),
+        planPrice: hidePricesCompletely ? "" : formatMoney(calc.total),
         sourceButton: "autoapply-slider",
         autoapplyClicks: calc.clicks,
         totalPrice: calc.total,
