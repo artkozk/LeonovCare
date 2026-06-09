@@ -155,3 +155,29 @@
    - `systemctl enable mentor-bot`;
    - закрытие UFW портов `8080/8081/8510/8511`;
    - обновление root-owned файлов и полный git-managed runtime checkout.
+
+## Append-only incident closure (2026-06-09) — reboot outage proved the `enable` gap was production-critical
+
+Что подтвердилось по факту:
+
+1. На сервере `85.198.82.221` `mentor-bot` был остановлен `2026-06-07 14:10:55 UTC`.
+2. Сервер перезагрузился `2026-06-07 14:11:32 UTC`.
+3. Так как `mentor-bot.service` оставался `disabled`, после reboot бот автоматически не вернулся.
+
+Что сделано:
+
+1. Перед восстановлением подтверждён рабочий runtime-файл БД: `/opt/mentor-bot/data/mentor_bot.db`.
+2. Для сохранности production SQLite выполнен online-backup через Python `sqlite3.backup()`:
+   - `/opt/mentor-bot/data/backups/mentor_bot.db.bak_after_restart_20260609_082342`.
+3. Затем выполнено:
+   - `systemctl start mentor-bot`;
+   - `systemctl enable mentor-bot`.
+4. Пост-проверка:
+   - `systemctl is-active mentor-bot` -> `active`;
+   - `systemctl is-enabled mentor-bot` -> `enabled`;
+   - `PYTHONPATH='.' python scripts/smoke_check.py` -> `OK modules=18 message_handlers=31 callback_handlers=324`.
+
+Почему это добавлено:
+
+1. Старый backlog-пункт `systemctl enable mentor-bot` больше нельзя трактовать как «необязательный infra-хвост» — инцидент доказал, что это прямой риск простоя после reboot.
+2. Append-only запись нужна, чтобы исторический phase-1 контекст сохранился, но текущее состояние было отражено без удаления старого текста.
