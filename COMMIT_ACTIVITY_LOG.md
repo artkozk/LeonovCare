@@ -19,3 +19,8 @@
 - Date: 2026-05-21
 - Purpose: production website variant without public prices.
 - Scope: update site rendering/content to remove pricing blocks and add rollout + rollback documentation.
+
+## Entry 5
+- Date: 2026-06-10
+- Purpose: sync mentor Telegram contact to the new public username.
+- Scope: update the central mentor URL, footer contact label, and append-only documentation for the contact change.

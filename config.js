@@ -1,4 +1,4 @@
-const mentorUrl = "https://t.me/mr_winchester1";
+const mentorUrl = "https://t.me/leonovcare";
 const channelUrl = "https://t.me/olegleonoff";
 const groupUrl = "https://t.me/olegleonoff";
 const botUrl = "https://t.me/Leonov_Care_bot";
