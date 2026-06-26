@@ -471,12 +471,6 @@
       : 2;
     const reviewsCacheKey = `lc_reviews_cache_v2_${telegramId || "default"}`;
 
-    if (!apiBaseUrl || !telegramId) {
-      track.innerHTML = "";
-      setStatus("Отзывы скоро появятся.");
-      return;
-    }
-
     const toReview = (item, index) => {
       const source = (item && typeof item === "object" && item.review && typeof item.review === "object")
         ? item.review
@@ -500,6 +494,28 @@
 
       return { id, username, message, createdAt };
     };
+
+    const toFallbackItem = (item, index) => {
+      if (!item || typeof item !== "object") {
+        return null;
+      }
+
+      const image = String(item.image || item.src || "").trim();
+      if (!image) {
+        return null;
+      }
+
+      const caption = String(item.caption || "").trim() || `Отзыв ${index + 1}`;
+      const alt = String(item.alt || "").trim() || caption;
+      const id = String(item.id || `fallback-${index + 1}`).trim();
+      return { id, image, caption, alt };
+    };
+
+    const fallbackItems = Array.isArray(reviewsConfig.fallbackItems)
+      ? reviewsConfig.fallbackItems
+        .map((item, index) => toFallbackItem(item, index))
+        .filter(Boolean)
+      : [];
 
     const makePreview = (text, limit) => {
       if (text.length <= limit) {
@@ -576,6 +592,35 @@
       setupReviewsCarousel();
     };
 
+    const renderFallbackItems = () => {
+      if (!fallbackItems.length) {
+        return false;
+      }
+
+      track.innerHTML = fallbackItems
+        .map((item) => `
+          <figure class="card review-card review-fallback-card">
+            <button
+              class="review-trigger"
+              type="button"
+              data-review-trigger
+              data-image="${escapeAttr(item.image)}"
+              data-caption="${escapeAttr(item.caption)}"
+            >
+              <span class="media-shell">
+                <img src="${escapeAttr(item.image)}" alt="${escapeAttr(item.alt)}" loading="lazy">
+              </span>
+            </button>
+            <figcaption>${escapeHtml(item.caption)}</figcaption>
+          </figure>
+        `)
+        .join("");
+
+      setupLightbox();
+      setupReviewsCarousel();
+      return true;
+    };
+
     const readCachedItems = () => {
       try {
         const raw = window.localStorage.getItem(reviewsCacheKey);
@@ -631,6 +676,17 @@
 
     const delay = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
 
+    if (!apiBaseUrl || !telegramId) {
+      if (renderFallbackItems()) {
+        setStatus("Показаны отзывы из архива.");
+        return;
+      }
+
+      track.innerHTML = "";
+      setStatus("Отзывы скоро появятся.");
+      return;
+    }
+
     try {
       setStatus("Загружаем отзывы…");
       const url = new URL(`${apiBaseUrl}/integrations/mentors/reviews/${encodeURIComponent(telegramId)}`);
@@ -664,6 +720,11 @@
       }
 
       if (!items.length) {
+        if (renderFallbackItems()) {
+          setStatus("Показаны отзывы из архива.");
+          return;
+        }
+
         track.innerHTML = "";
         setStatus("Пока нет опубликованных отзывов.");
         return;
@@ -689,6 +750,11 @@
           }
         }
         setStatus("Показаны сохраненные отзывы. Обновление из API временно недоступно.");
+        return;
+      }
+
+      if (renderFallbackItems()) {
+        setStatus("Показаны отзывы из архива.");
         return;
       }
 
@@ -1317,6 +1383,10 @@
     };
 
     document.querySelectorAll("[data-review-trigger]").forEach((button) => {
+      if (button.dataset.lightboxBound === "true") {
+        return;
+      }
+      button.dataset.lightboxBound = "true";
       button.addEventListener("click", () => {
         const image = button.getAttribute("data-image");
         const caption = button.getAttribute("data-caption");
@@ -1328,18 +1398,21 @@
       });
     });
 
-    closeButton.addEventListener("click", close);
-    lightbox.addEventListener("click", (event) => {
-      if (event.target === lightbox) {
-        close();
-      }
-    });
+    if (lightbox.dataset.bound !== "true") {
+      lightbox.dataset.bound = "true";
+      closeButton.addEventListener("click", close);
+      lightbox.addEventListener("click", (event) => {
+        if (event.target === lightbox) {
+          close();
+        }
+      });
 
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && lightbox.classList.contains("is-open")) {
-        close();
-      }
-    });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && lightbox.classList.contains("is-open")) {
+          close();
+        }
+      });
+    }
   };
 
   const setupReviewsCarousel = () => {

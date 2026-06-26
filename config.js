@@ -1460,7 +1460,54 @@ const reviews = {
   perPage: 20,
   previewChars: 220,
   requestTimeoutMs: 12000,
-  retryCount: 2
+  retryCount: 2,
+  fallbackItems: [
+    {
+      image: "Feedback/photo_1_2026-03-06_14-57-59.jpg",
+      caption: "Java • оффер 270 000 ₽ gross • срок 60 дней",
+      alt: "Отзыв: Java, оффер 270 000 ₽ gross, 60 дней"
+    },
+    {
+      image: "Feedback/photo_2_2026-03-06_14-57-59.jpg",
+      caption: "Java • оффер 402 000 ₽ gross • срок 62 дня",
+      alt: "Отзыв: Java, оффер 402 000 ₽ gross, 62 дня"
+    },
+    {
+      image: "Feedback/photo_3_2026-03-06_14-57-59.jpg",
+      caption: "Python • оффер 340 000 ₽ gross • срок 14 дней",
+      alt: "Отзыв: Python, оффер 340 000 ₽ gross, 14 дней"
+    },
+    {
+      image: "Feedback/photo_4_2026-03-06_14-57-59.jpg",
+      caption: "Java • оффер 402 000 ₽ gross • срок 14 дней",
+      alt: "Отзыв: Java, оффер 402 000 ₽ gross, 14 дней"
+    },
+    {
+      image: "Feedback/photo_5_2026-03-06_14-57-59.jpg",
+      caption: "Java • оффер 280 000 ₽ gross • срок 14 дней",
+      alt: "Отзыв: Java, оффер 280 000 ₽ gross, 14 дней"
+    },
+    {
+      image: "Feedback/photo_6_2026-03-06_14-57-59.jpg",
+      caption: "Java • оффер 185 000 ₽ gross • срок 35 дней",
+      alt: "Отзыв: Java, оффер 185 000 ₽ gross, 35 дней"
+    },
+    {
+      image: "Feedback/photo_7_2026-03-06_14-57-59.jpg",
+      caption: "Java • оффер 153 000 ₽ gross • срок 65 дней",
+      alt: "Отзыв: Java, оффер 153 000 ₽ gross, 65 дней"
+    },
+    {
+      image: "Feedback/photo_8_2026-03-06_14-57-59.jpg",
+      caption: "Java • оффер 310 000 ₽ gross • срок 74 дня",
+      alt: "Отзыв: Java, оффер 310 000 ₽ gross, 74 дня"
+    },
+    {
+      image: "Feedback/photo_9_2026-03-06_14-57-59.jpg",
+      caption: "Java • оффер 320 000 ₽ gross • срок 46 дней",
+      alt: "Отзыв: Java, оффер 320 000 ₽ gross, 46 дней"
+    }
+  ]
 };
 
 window.siteConfig = {
