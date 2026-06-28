@@ -678,7 +678,7 @@
 
     if (!apiBaseUrl || !telegramId) {
       if (renderFallbackItems()) {
-        setStatus("Показаны отзывы из архива.");
+        setStatus(`Показано отзывов: ${fallbackItems.length}.`);
         return;
       }
 
@@ -721,7 +721,7 @@
 
       if (!items.length) {
         if (renderFallbackItems()) {
-          setStatus("Показаны отзывы из архива.");
+          setStatus(`Показано отзывов: ${fallbackItems.length}.`);
           return;
         }
 
@@ -754,7 +754,7 @@
       }
 
       if (renderFallbackItems()) {
-        setStatus("Показаны отзывы из архива.");
+        setStatus(`Показано отзывов: ${fallbackItems.length}.`);
         return;
       }
 
