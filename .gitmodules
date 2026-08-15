@@ -1,6 +1,6 @@
 [submodule "bot"]
 	path = bot
-	url = https://github.com/artkozk/LeonovBot.git
+	url = https://github.com/LeonovCare/mentor-organizer.git
 [submodule "AutoHh/parser_hh"]
 	path = AutoHh/parser_hh
 	url = https://github.com/artkozk/parser_hh.git
